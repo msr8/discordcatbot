@@ -13,7 +13,7 @@ P = PREFIX
 HELP = f'''`{P}?` | `{P}h` | `{P}help` | `{P}list` : Gives you a list of available commands
 `{P}info` | `{P}about` : Tells stuff about the bot
 `{P}ping` : Pings the bot and tells you its latency
-`{P}cute` | `{P}cat` : Sends you a pic/vid of an angel
+`{P}cute` | `{P}cat` | `{P}ket` : Sends you a pic/vid of an angel
 `{P}channel <channel>` : Sets the channel where the media is sent
 
 The bot automatically sends a pic/vid every hour in the channel set up by `{P}channel <channel>`. In case you haven't set it up, please do it right now. To view which channel has been set up, just do `{P}channel`
@@ -63,7 +63,7 @@ class CustomHelpCommand(commands.DefaultHelpCommand):
 	def __init__ (self):
 		super().__init__()
 
-	# When typed "c$help"
+	# When typed "c:help"
 	async def send_bot_help(self,mapping):
 		ctx = self.get_destination()
 		await ctx.send( f'Commands for <@{client.user.id}>:\n\n{HELP}' )
@@ -80,8 +80,8 @@ async def on_ready():
 	# Changing bot's status
 	activity = discord.Game('with my cat')
 	await client.change_presence( activity=activity  )
-	# Starts the loop to send msg
-	main_loop.start()
+	# Starts the loop to send cats
+	# main_loop.start()
 	print(f'[USING {client.user}]')
 
 
@@ -96,19 +96,34 @@ async def list(ctx):
 	await ctx.send( f'Commands for <@{client.user.id}>:\n\n{HELP}' )
 
 
+
 # Info/About
 @client.command( aliases=['info'], description='Tells stuff bout the bot' )
 async def about(ctx):
 	created = client.user.created_at
-	# Sends all the info
-	await ctx.send( f'''__**Info about <@{client.user.id}>:**__\n
-**Name:**  {client.user}
-**ID:**  {client.user.id}
-**Created at:**  {created.day} {strm(created.month)} {created.year}
-**Uptime:**  <t:{START}:R>
-**Latency:**  {int(client.latency*1000)}
-**Total servers:**  {len(client.guilds)}
-**Owner:**  {await client.fetch_user(PEOPLE["me"])}''' )
+	# Creates the embed object
+	embed = discord.Embed(
+		title = client.user,
+		description = f'Information about <@{client.user.id}>',
+		colour = discord.Colour.blue()
+		)
+	# Sets footer and author
+	embed.set_footer(text = 'Have a nice day!')
+	embed.set_author(name=client.user, icon_url=client.user.avatar_url)
+	# Sets all the fields and gets all the info
+	embed.add_field(name='Name', 			value= client.user, 											inline=True)
+	embed.add_field(name='ID', 				value= client.user.id, 											inline=True)
+	embed.add_field(name='Prefix', 			value= f'`{PREFIX}`', 											inline=True)
+	embed.add_field(name='Created At', 		value= f'{created.day} {strm(created.month)} {created.year}', 	inline=True)
+	embed.add_field(name='Uptime', 			value= f'<t:{START}:R>', 										inline=True)
+	embed.add_field(name='Latency/Ping', 	value= f'{int(client.latency*1000)} ms', 						inline=True)
+	embed.add_field(name='Total Servers', 	value= len(client.guilds), 										inline=True)
+	embed.add_field(name='Owner', 			value= await client.fetch_user(PEOPLE["me"]), 					inline=True)
+	embed.add_field(name='Github', 			value= '[Link](https://github.com/msr8/discordcatbot)', 		inline=True)
+	# Sends the embed
+	await ctx.send(embed=embed)
+# Documentation, support server, invite
+
 
 
 # Ping
@@ -118,13 +133,15 @@ async def ping(ctx):
 	await ctx.send(f'Latency: **{latency}ms**')
 
 
+
 # Cute
-@client.command( aliases=['cat'], description='Sends you a pic of a cute animal, mostly cats' )
+@client.command( aliases=['cat','ket'], description='Sends you a pic of a cute animal, mostly cats' )
 async def cute(ctx):
 	cute_file_path = get_cute_pic_path()
 	# Makes the discord file object
 	to_send_cute_file = discord.File( cute_file_path, filename= os.path.basename(cute_file_path) )
 	await ctx.send( file=to_send_cute_file )
+
 
 
 # Channel
@@ -145,6 +162,10 @@ async def channel(ctx, channel : discord.TextChannel = None):
 			return
 	# If given argument, saves that channel in channel.json
 	else:
+		# Checks if they are owner. If they arent, tell them that and stops this function
+		if not ctx.author.id == guild.owner_id:
+			await ctx.send( f'I am sorry <@{ctx.author.id}> but only the server owner ({await client.fetch_user(guild.owner_id)}) can change the media channel ¯\\_(ツ)_/¯' )
+			return
 		channels_data[str(guild.id)] = str(channel.id)
 		save_json(channels_data, channels_json)
 		await ctx.send(f'<#{channel.id}> has been set as the media channel for **{guild.name}**')
@@ -158,7 +179,12 @@ async def channel(ctx, channel : discord.TextChannel = None):
 
 
 
-@tasks.loop( minutes=5 )
+
+
+
+
+
+@tasks.loop( hours=1 )
 async def main_loop():
 	# Gets data inside channels.json
 	channels_data = load_json(channels_json)

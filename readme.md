@@ -1,5 +1,5 @@
 # Introduction
-This is a WIP (Work in progress) discord bot which sends a random cute animal pic (mostly a cat) every hour. I plan to get it fully up and running within 2 weeks, so if you're intersted in adding this bot to your server, be sure to star this repository!
+This is a WIP (Work in progress) discord bot that sends a random cute animal pic (mostly a cat) every hour. I plan to get it fully up and running within 2 weeks, so if you're intersted in adding this bot to your server, be sure to star this repository!
 
 <br>
 
@@ -12,3 +12,4 @@ This is a WIP (Work in progress) discord bot which sends a random cute animal pi
 
 4) Register it on sites like top.gg
 
+5) Add abilty to send the media in DMs
