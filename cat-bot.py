@@ -1,4 +1,4 @@
-from secret_stuff import TOKEN, PICS_PATH, PEOPLE
+from secret_stuff import TOKEN, PICS_PATH, PEOPLE, LAST_POST_CHANNEL_ID
 from discord.ext import commands, tasks
 import random as r
 import time as t
@@ -7,6 +7,8 @@ import json
 import os
 
 START = int( t.time() )
+INVITE_LINK = 'https://discord.com/api/oauth2/authorize?client_id=887525298973855755&permissions=274878023680&scope=bot'   #Send msges, Send msges in threads, Embed Links, Attach Files, Raed msg history
+DELAY = 1*60*60				# 1 hour
 PREFIX = 'c:'
 DATA = os.path.join( os.path.dirname(__file__) , 'DATA' )
 P = PREFIX
@@ -52,6 +54,10 @@ def get_cute_pic_path():
 	# Returns the valid file path
 	return valid_file
 
+async def get_last_posted():
+	async for message in lp_channel.history(limit=1):
+		return int(message.content)
+
 
 
 
@@ -68,21 +74,40 @@ class CustomHelpCommand(commands.DefaultHelpCommand):
 		ctx = self.get_destination()
 		await ctx.send( f'Commands for <@{client.user.id}>:\n\n{HELP}' )
 
+# Does the intent shit
+intents = discord.Intents.default()
+intents.members = True
+
+client = commands.Bot( command_prefix=PREFIX, help_command=CustomHelpCommand(), intents=intents )
 
 
 
-client = commands.Bot( command_prefix=PREFIX, help_command=CustomHelpCommand() )
 
 
 # Once ready
 @client.event
 async def on_ready():
+	global my_owner, lp_channel
 	# Changing bot's status
 	activity = discord.Game('with my cat')
 	await client.change_presence( activity=activity  )
 	# Starts the loop to send cats
-	# main_loop.start()
+	main_loop.start()
+	# Gets the last posted channel, aka the channel where bot's fosting frequency is stored
+	lp_channel = client.get_channel( LAST_POST_CHANNEL_ID )
+	# Assigns the member object of my owner
+	my_owner = (await client.application_info()).owner
 	print(f'[USING {client.user}]')
+
+
+# When joins a server
+@client.event
+async def on_guild_join(guild):
+	# Tells my owner that I joined
+	dm_channel = await my_owner.create_dm()
+	await dm_channel.send( f'Ayo <@{guild.owner_id}> just added me to their server **{guild}**. Pog!' )
+	print(discord.owner)
+
 
 
 
@@ -111,16 +136,16 @@ async def about(ctx):
 	embed.set_footer(text = 'Have a nice day!')
 	embed.set_author(name=client.user, icon_url=client.user.avatar_url)
 	# Sets all the fields and gets all the info
-	embed.add_field(name='Name', 			value= client.user, 											inline=True)
-	embed.add_field(name='ID', 				value= client.user.id, 											inline=True)
-	embed.add_field(name='Prefix', 			value= f'`{PREFIX}`', 											inline=True)
-	embed.add_field(name='Created At', 		value= f'{created.day} {strm(created.month)} {created.year}', 	inline=True)
-	embed.add_field(name='Uptime', 			value= f'<t:{START}:R>', 										inline=True)
-	embed.add_field(name='Latency/Ping', 	value= f'{int(client.latency*1000)} ms', 						inline=True)
-	embed.add_field(name='Total Servers', 	value= len(client.guilds), 										inline=True)
-	embed.add_field(name='Owner', 			value= await client.fetch_user(PEOPLE["me"]), 					inline=True)
-	embed.add_field(name='Github', 			value= '[Link](https://github.com/msr8/discordcatbot)', 		inline=True)
-	# Sends the embed
+	embed.add_field(name='Name',			value= client.user,												inline=True)
+	embed.add_field(name='ID',				value= client.user.id,											inline=True)
+	embed.add_field(name='Prefix',			value= f'`{PREFIX}`',											inline=True)
+	embed.add_field(name='Created At',		value= f'{created.day} {strm(created.month)} {created.year}',	inline=True)
+	embed.add_field(name='Uptime',			value= f'<t:{START}:R>',										inline=True)
+	embed.add_field(name='Latency/Ping',	value= f'{int(client.latency*1000)} ms',						inline=True)
+	embed.add_field(name='Total Servers',	value= len(client.guilds),										inline=True)
+	embed.add_field(name='Owner', 			value= my_owner,												inline=True)
+	embed.add_field(name='Github',			value= '[Github](https://github.com/msr8/discordcatbot)',		inline=True)
+	embed.add_field(name='Invite',			value= f'[Invite]({INVITE_LINK})',								inline=True)
 	await ctx.send(embed=embed)
 # Documentation, support server, invite
 
@@ -130,7 +155,8 @@ async def about(ctx):
 @client.command( description='Pings the bot and tells it\'s latency' )
 async def ping(ctx):
 	latency = int(client.latency*1000)
-	await ctx.send(f'Latency: **{latency}ms**')
+	await ctx.send(f'Latency: **{latency} ms**')
+	print(ctx.guild.owner)
 
 
 
@@ -164,7 +190,7 @@ async def channel(ctx, channel : discord.TextChannel = None):
 	else:
 		# Checks if they are owner. If they arent, tell them that and stops this function
 		if not ctx.author.id == guild.owner_id:
-			await ctx.send( f'I am sorry <@{ctx.author.id}> but only the server owner ({await client.fetch_user(guild.owner_id)}) can change the media channel ¯\\_(ツ)_/¯' )
+			await ctx.send( f'I am sorry <@{ctx.author.id}> but only the server owner ({guild.owner}) can change the media channel ¯\\_(ツ)_/¯' )
 			return
 		channels_data[str(guild.id)] = str(channel.id)
 		save_json(channels_data, channels_json)
@@ -184,8 +210,11 @@ async def channel(ctx, channel : discord.TextChannel = None):
 
 
 
-@tasks.loop( hours=1 )
+@tasks.loop( minutes=1 )
 async def main_loop():
+	# Checks if its been an hr since last posted
+	if not int(t.time()) - DELAY > await get_last_posted():
+		return
 	# Gets data inside channels.json
 	channels_data = load_json(channels_json)
 	# Loops thro them and gets the channel
@@ -219,6 +248,9 @@ async def main_loop():
 					await dm_channel.send(f'Please set up the bot in another channel of **{guild.name}** since I can\'t message in <#{channel_id}> anymore. If you would like to stop recieving messages about setting up the bot, please message "STOP". If you want to resume the messages, just delete the "STOP" message')
 			except Exception as e:
 				print(f'DM Error: {guild_id} | {e}')
+	# Messages in last posted channel
+	await lp_channel.send( int(t.time()) )
+
 
 
 
