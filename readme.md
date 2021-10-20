@@ -13,3 +13,7 @@ This is a WIP (Work in progress) discord bot that sends a random cute animal pic
 4) Register it on sites like top.gg
 
 5) Add abilty to send the media in DMs
+
+<br>
+
+# PLEASE READ: Due to external circumstances, I won't be able to work on this bot for ~3 months, sorry for the delay
