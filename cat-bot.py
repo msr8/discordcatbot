@@ -1,43 +1,88 @@
-from secret_stuff import TOKEN, PICS_PATH, PEOPLE, LAST_POST_CHANNEL_ID
+from secret_stuff import TOKEN, PICS_PATH, PEOPLE
 from discord.ext import commands, tasks
 import random as r
 import time as t
 import discord
-import json
 import os
 
-START = int( t.time() )
-INVITE_LINK = 'https://discord.com/api/oauth2/authorize?client_id=887525298973855755&permissions=274878023680&scope=bot'   #Send msges, Send msges in threads, Embed Links, Attach Files, Raed msg history
-DELAY = 1*60*60				# 1 hour
+
 PREFIX = 'c:'
+INVITE_LINK = 'https://discord.com/api/oauth2/authorize?client_id=893261717155500082&permissions=274878023680&scope=bot'
 DATA = os.path.join( os.path.dirname(__file__) , 'DATA' )
+CHANNELS = os.path.join( DATA, 'channels' )
 P = PREFIX
+
 HELP = f'''`{P}?` | `{P}h` | `{P}help` | `{P}list` : Gives you a list of available commands
-`{P}info` | `{P}about` : Tells stuff about the bot
 `{P}ping` : Pings the bot and tells you its latency
-`{P}cute` | `{P}cat` | `{P}ket` : Sends you a pic/vid of an angel
-`{P}channel <channel>` : Sets the channel where the media is sent
+`{P}info` | `{P}about` : Tells stuff about the bot
+`{P}channel help` | `{P}channels help` : Shows the commands used to set up this bot
+`{P}cute` | `{P}cat` | `{P}ket` : Sends you a pic/vid of a cute animal (mostly cats)'''
 
-The bot automatically sends a pic/vid every hour in the channel set up by `{P}channel <channel>`. In case you haven't set it up, please do it right now. To view which channel has been set up, just do `{P}channel`
-Do `{P}help [command]` to view arguments, aliases, and description about that command
-'''
+CHANNEL_HELP = help_text = f'''`{P}channel help` : Shows this message
+`{P}channel <list | ls>` : Shows all the allowed channels in this server
+`{P}channel allow <channel>` or `{P}channel add <channel>` : Allows a channel
+`{P}channel disallow <channel>` or `{P}channel remove <channel>` : Disallows a channel'''
 
 
 
 
 
-def strm(month_int):
-	month_lib = {1:'January', 2:'February', 3:'March', 4:'April', 5:'May', 6:'June', 7:'July', 8:'August', 9:'September', 10:'October', 11:'November', 12: 'December'}
-	return month_lib[ month_int ]
 
-def load_json(json_file):
-	with open(json_file,'r') as f:
-		ret = json.load(f)
+# Does the help command shit
+class CustomHelpCommand(commands.DefaultHelpCommand):
+	def __init__ (self):
+		super().__init__()
+
+	# When typed "c:help"
+	async def send_bot_help(self,mapping):
+		channel = self.get_destination()
+		# Checks if I am allowed to send msges in this channel
+		if not str(channel.id) in get_channels(channel.guild):
+			return
+		await channel.send( f'Commands for <@{bot.user.id}>:\n\n{HELP}' )
+
+
+bot = commands.Bot( command_prefix=PREFIX, help_command=CustomHelpCommand() )
+
+
+
+
+
+def get_channels(guild):
+	# Gets path of the file
+	file_path = os.path.join(CHANNELS,f'{guild.id}.txt')
+	# Checks if its exists
+	if not os.path.exists(file_path):
+		return []
+	# Gets the data
+	with open(file_path) as f:
+		ret = [i.strip() for i in f.readlines()]
 	return ret
 
-def save_json(dic,json_file):
-	with open(json_file,'w') as f:
-		json.dump(dic, f, indent=2, skipkeys=True, sort_keys=True)
+def dump_channels(channels, guild):
+	# Gets path of the file
+	file_path = os.path.join(CHANNELS,f'{guild.id}.txt')
+	to_dump = '\n'.join(channels)
+	# Writes the data
+	with open(file_path,'w') as f:
+		f.write(to_dump)
+
+async def send_dm(ctx):
+	# Gets all the attributes
+	dm_channel = await ctx.author.create_dm()
+	channel = ctx.channel
+	guild = ctx.guild
+	channels = get_channels(guild)
+	# If there are no allowed channels
+	if not len(channels):
+		to_send = f'I am not allowed to send messages in this server ({guild.name}). If you want me to send messages in this server, contact the mods of this server. If you are a mod and are trying to set me up in your server, do `c:channel add <channel>` with the channel you want to allow me to send messages in. In case of any further queries, check out my [GitHub](https://github.com/msr8/discordcatbot)'
+	# If there are allowed channels
+	else:
+		to_send = f'I am not allowed to send messages in <#{channel.id}> of the server **{guild.name}**, I can only send messages in the following channels:\n\n'
+		for channel in channels:
+			to_send += f'<#{channel}>\n'
+	# Sends the DM
+	await dm_channel.send(embed=discord.Embed( description=to_send , colour=discord.Colour.red() ))
 
 def get_cute_pic_path():
 	# Gets all the files and folders of the main directory where the pictures are stored
@@ -53,10 +98,7 @@ def get_cute_pic_path():
 			eyebleach_valid = True
 	# Returns the valid file path
 	return valid_file
-
-async def get_last_posted():
-	async for message in lp_channel.history(limit=1):
-		return int(message.content)
+	
 
 
 
@@ -64,49 +106,24 @@ async def get_last_posted():
 
 
 
-# Does the help command shit
-class CustomHelpCommand(commands.DefaultHelpCommand):
-	def __init__ (self):
-		super().__init__()
 
-	# When typed "c:help"
-	async def send_bot_help(self,mapping):
-		ctx = self.get_destination()
-		await ctx.send( f'Commands for <@{client.user.id}>:\n\n{HELP}' )
 
-# Does the intent shit
-intents = discord.Intents.default()
-intents.members = True
 
-client = commands.Bot( command_prefix=PREFIX, help_command=CustomHelpCommand(), intents=intents )
+
+
+
+
+
 
 
 
 
 
 # Once ready
-@client.event
+@bot.event
 async def on_ready():
-	global my_owner, lp_channel
-	# Changing bot's status
-	activity = discord.Game('with my cat')
-	await client.change_presence( activity=activity  )
-	# Starts the loop to send cats
-	main_loop.start()
-	# Gets the last posted channel, aka the channel where bot's fosting frequency is stored
-	lp_channel = client.get_channel( LAST_POST_CHANNEL_ID )
-	# Assigns the member object of my owner
-	my_owner = (await client.application_info()).owner
-	print(f'[USING {client.user}]')
+	print(f'[USING {bot.user}]')
 
-
-# When joins a server
-@client.event
-async def on_guild_join(guild):
-	# Tells my owner that I joined
-	dm_channel = await my_owner.create_dm()
-	await dm_channel.send( f'Ayo <@{guild.owner_id}> just added me to their server **{guild}**. Pog!' )
-	print(discord.owner)
 
 
 
@@ -116,140 +133,141 @@ async def on_guild_join(guild):
 
 
 # Help
-@client.command( aliases=['?','h'], description='Gives you a list of all the available commands' )
-async def list(ctx):
-	await ctx.send( f'Commands for <@{client.user.id}>:\n\n{HELP}' )
+@bot.command( aliases=['?','list'], description='Gives you a list of all the available commands' )
+async def h(ctx):
+	# Checks if I am allowed to send msges in this channel
+	if not str(ctx.channel.id) in get_channels(ctx.guild):
+		await send_dm(ctx)
+		return
+	await ctx.reply( f'Commands for <@{bot.user.id}>:\n\n{HELP}' )
 
-
-
-# Info/About
-@client.command( aliases=['info'], description='Tells stuff bout the bot' )
-async def about(ctx):
-	created = client.user.created_at
-	# Creates the embed object
-	embed = discord.Embed(
-		title = client.user,
-		description = f'Information about <@{client.user.id}>',
-		colour = discord.Colour.blue()
-		)
-	# Sets footer and author
-	embed.set_footer(text = 'Have a nice day!')
-	embed.set_author(name=client.user, icon_url=client.user.avatar_url)
-	# Sets all the fields and gets all the info
-	embed.add_field(name='Name',			value= client.user,												inline=True)
-	embed.add_field(name='ID',				value= client.user.id,											inline=True)
-	embed.add_field(name='Prefix',			value= f'`{PREFIX}`',											inline=True)
-	embed.add_field(name='Created At',		value= f'{created.day} {strm(created.month)} {created.year}',	inline=True)
-	embed.add_field(name='Uptime',			value= f'<t:{START}:R>',										inline=True)
-	embed.add_field(name='Latency/Ping',	value= f'{int(client.latency*1000)} ms',						inline=True)
-	embed.add_field(name='Total Servers',	value= len(client.guilds),										inline=True)
-	embed.add_field(name='Owner', 			value= my_owner,												inline=True)
-	embed.add_field(name='Github',			value= '[Github](https://github.com/msr8/discordcatbot)',		inline=True)
-	embed.add_field(name='Invite',			value= f'[Invite]({INVITE_LINK})',								inline=True)
-	await ctx.send(embed=embed)
-# Documentation, support server, invite
 
 
 
 # Ping
-@client.command( description='Pings the bot and tells it\'s latency' )
+@bot.command( description='Pings the bot and tells it\'s latency' )
 async def ping(ctx):
-	latency = int(client.latency*1000)
-	await ctx.send(f'Latency: **{latency} ms**')
-	print(ctx.guild.owner)
+	# Checks if I am allowed to send msges in this channel
+	if not str(ctx.channel.id) in get_channels(ctx.guild):
+		await send_dm(ctx)
+		return
+	latency = int(bot.latency*1000)
+	await ctx.reply(f'**Latency:** {latency}ms')
 
 
 
-# Cute
-@client.command( aliases=['cat','ket'], description='Sends you a pic of a cute animal, mostly cats' )
-async def cute(ctx):
-	cute_file_path = get_cute_pic_path()
-	# Makes the discord file object
-	to_send_cute_file = discord.File( cute_file_path, filename= os.path.basename(cute_file_path) )
-	await ctx.send( file=to_send_cute_file )
+
+# Info
+@bot.command( aliases=['about'] )
+async def info(ctx):
+	# Checks if I am allowed to send msges in this channel
+	if not str(ctx.channel.id) in get_channels(ctx.guild):
+		await send_dm(ctx)
+		return
+	embed = discord.Embed( title=bot.user , description=f'Information about <@{bot.user.id}>' , colour=discord.Colour.blue() )
+	embed.set_author(name=bot.user, icon_url=bot.user.avatar_url)
+	# Adds Name, ID, Prefix, Ping, Total Servers, Owner, Github, Invite
+	embed.add_field(name='Name',value=bot.user)
+	embed.add_field(name='ID',value=bot.user.id)
+	embed.add_field(name='Prefix',value=PREFIX)
+	embed.add_field(name='Ping',value=f'{int(bot.latency*1000)}ms')
+	embed.add_field(name='Total Servers',value=len(bot.guilds))
+	embed.add_field(name='Owner',value=f'<@{PEOPLE["me"]}>')
+	embed.add_field(name='GitHub',value='[GitHub](https://github.com/msr8/discordcatbot)')
+	embed.add_field(name='Invite',value=f'[Invite]({INVITE_LINK})')
+	# Sends the Embed
+	await ctx.reply(embed=embed)
+
+
+
+
+# Cat | Cute
+@bot.command( aliases=['cute','ket'] )
+async def cat(ctx):
+	# Checks if I am allowed to send msges in this channel
+	if not str(ctx.channel.id) in get_channels(ctx.guild):
+		await send_dm(ctx)
+		return
+	await ctx.reply(file=discord.File( get_cute_pic_path() ))
+
 
 
 
 # Channel
-@client.command( description='Sets the channel where the media is sent' )
-async def channel(ctx, channel : discord.TextChannel = None):
-	guild = ctx.guild
-	channels_data = load_json(channels_json)
-	channel_old = channels_data.get(str(guild.id))
-	# If no argument given, shows the channel set
-	if channel == None:
-		# If no channel is set
-		if channel_old == None:
-			await ctx.send(f'No media channel has been set for **{guild.name}**')
-			return
-		# If channel is set, tell which channel
-		else:
-			await ctx.send(f'<#{channel_old}> is the media channel for **{guild.name}**')
-			return
-	# If given argument, saves that channel in channel.json
-	else:
-		# Checks if they are owner. If they arent, tell them that and stops this function
-		if not ctx.author.id == guild.owner_id:
-			await ctx.send( f'I am sorry <@{ctx.author.id}> but only the server owner ({guild.owner}) can change the media channel ¯\\_(ツ)_/¯' )
-			return
-		channels_data[str(guild.id)] = str(channel.id)
-		save_json(channels_data, channels_json)
-		await ctx.send(f'<#{channel.id}> has been set as the media channel for **{guild.name}**')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@tasks.loop( minutes=1 )
-async def main_loop():
-	# Checks if its been an hr since last posted
-	if not int(t.time()) - DELAY > await get_last_posted():
+@bot.command( aliases=['channels'] )
+async def channel(ctx, setting=None, channel:discord.TextChannel=None):
+	# Checks if author has manage channels permission
+	if not ctx.author.guild_permissions.manage_channels:
+		# Sends a DM explaining they dont have perms
+		dm_channel = await ctx.author.create_dm()
+		await dm_channel.send(embed=discord.Embed( description=f'I am sorry but only people who have the `Manage Channels` permissions can do `{P}channel`. If you think there has been an error, please contact my developer <@{PEOPLE["me"]}> or open up an issue on my [github](https://github.com/msr8/discordcatbot)' , colour=discord.Colour.red() ))
 		return
-	# Gets data inside channels.json
-	channels_data = load_json(channels_json)
-	# Loops thro them and gets the channel
-	for guild_id in channels_data.keys():
-		try:
-			channel = await client.fetch_channel( channels_data[guild_id] )
-			# Sends stuff to the channel
-			# Gets the path of the file to send
-			cute_file_path = get_cute_pic_path()
-			# Makes the discord file object
-			to_send_cute_file = discord.File( cute_file_path, filename= os.path.basename(cute_file_path) )
-			await channel.send( file=to_send_cute_file )
-				
-		# In case of error, prints it and tries to message owner about it
-		except Exception as e:
-			channel_id = channels_data[guild_id]
-			print(f'Channel Error: {guild_id} | {channel_id} | {e}')
-			# Tries to msg owner about it
-			try:
-				# Gets guild object of which guild the channel was in
-				guild = await client.fetch_guild(guild_id)
-				# Gets owner of that guild
-				owner = await client.fetch_user(guild.owner_id)
-				# Gets DM channel with the owner
-				dm_channel = await owner.create_dm()
-				# Checks if their last message was 'STOP'
-				async for message in dm_channel.history(limit=1):
-					can_msg = False if message.content == 'STOP' else True
-				# If we can message, we message
-				if can_msg:
-					await dm_channel.send(f'Please set up the bot in another channel of **{guild.name}** since I can\'t message in <#{channel_id}> anymore. If you would like to stop recieving messages about setting up the bot, please message "STOP". If you want to resume the messages, just delete the "STOP" message')
-			except Exception as e:
-				print(f'DM Error: {guild_id} | {e}')
-	# Messages in last posted channel
-	await lp_channel.send( int(t.time()) )
+
+	# Checks if its a valid setting
+	if setting == None or not setting.lower() in ['help','h','?','list','ls','allow','add','disallow','remove']:
+		await ctx.reply(embed = discord.Embed( description=f'{setting} is not a valid setting, please do `{P}channel help` to view all the valid settings' , colour=discord.Colour.red() ))
+		return
+	setting = setting.lower()
+
+	# Help
+	if setting in ['help','h','?']:
+		await ctx.reply(embed=discord.Embed( description=f'**All the commands for `{P}channel` of <@{bot.user.id}>:**\n\n'+CHANNEL_HELP , colour=discord.Colour.blue() ))
+		return
+
+	# List | ls
+	elif setting in ['list','ls']:
+		# Gets the channels
+		channels = get_channels(ctx.guild)
+		channels = [str(i) for i in channels]
+		# Checks if there are no channels
+		if not len(channels):
+			await ctx.reply('There are no allowed channels for this server')
+		# Else lists the channels
+		else:
+			channel_text = f'**Allowed channels for {ctx.guild}:**\n\n'
+			for channel in channels:
+				channel_text += f'<#{channel}>\n'
+			await ctx.reply(embed=discord.Embed( description=channel_text , colour=discord.Colour.blue() ))
+
+	# Allow
+	elif setting in ['allow','add']:
+		# Checks if channel given
+		if not channel:
+			await ctx.reply('Please provide a channel which you want to allow')
+			return
+		# Gets the channels
+		channels = get_channels(ctx.guild)
+		channels = [str(i) for i in channels]
+		# Checks if its an already allowed channel
+		if str(channel.id) in channels:
+			ctx.reply(f'<#{channel.id}> is already an allowed channel')
+			return
+		# Adds the channel
+		channels.append(str(channel.id))
+		# Dumps the data
+		dump_channels(channels,ctx.guild)
+		# Tells the user its done
+		await ctx.reply(embed=discord.Embed( description=f'<#{channel.id}> has been succesfully set as an allowed channel' , colour=discord.Colour.blue() ))
+		
+	# Disallow
+	elif setting in ['disallow','remove']:
+		# Checks if channel given
+		if not channel:
+			await ctx.reply('Please provide a channel which you want to allow')
+			return
+		# Gets the channels
+		channels = get_channels(ctx.guild)
+		channels = [str(i) for i in channels]
+		# Checks if it isnt an allowed channel
+		if not str(channel.id) in channels:
+			ctx.reply(f'<#{channel.id}> is not an allowed channel')
+			return
+		# Adds the channel
+		channels.remove(str(channel.id))
+		# Dumps the data
+		dump_channels(channels,ctx.guild)
+		# Tells the user its done
+		await ctx.reply(embed=discord.Embed( description=f'<#{channel.id}> has been succesfully removed from the list of allowed channels' , colour=discord.Colour.blue() ))
 
 
 
@@ -261,19 +279,38 @@ async def main_loop():
 
 
 
-# Initialisation
-
-# DATA folder
-if not os.path.exists(DATA):
-	os.makedirs(DATA)
-# channels.json
-channels_json = os.path.join(DATA,'channels.json')
-if not os.path.isfile(channels_json):
-	save_json({}, channels_json)
 
 
 
-client.run(TOKEN)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+for path in [DATA,CHANNELS]:
+	if not os.path.exists(path):
+		os.makedirs(path)
+
+
+
+
+
+bot.run(TOKEN)
+
+
 
 
 
