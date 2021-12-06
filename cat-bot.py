@@ -184,10 +184,12 @@ async def info(ctx):
 # Cat | Cute
 @bot.command( aliases=['cute','ket'] )
 async def cat(ctx):
-	# Checks if I am allowed to send msges in this channel
-	if not str(ctx.channel.id) in get_channels(ctx.guild):
-		await send_dm(ctx)
-		return
+	# Checks if its a DM channel
+	if not isinstance(ctx.channel, discord.DMChannel):
+		# Checks if I am allowed to send msges in this channel
+		if not str(ctx.channel.id) in get_channels(ctx.guild):
+			await send_dm(ctx)
+			return
 	await ctx.reply(file=discord.File( get_cute_pic_path() ))
 
 
