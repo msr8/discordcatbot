@@ -6,8 +6,6 @@ Commands
 
 The following commands are available:
 
-:raw-html:`<br />`
-
 ``c:?`` | ``c:h`` | ``c:help`` | ``c:list`` : Gives you a list of available commands
 
 ``c:ping`` : Pings the bot and tells you its latency
@@ -26,11 +24,7 @@ The following commands are available:
 
 ``/settings`` : Basically ``c:channel`` but GUI
 
-:raw-html:`<br />`
-
 Lets explore these commands a bit more
-
-<br>
 
 Help
 ----
@@ -51,8 +45,6 @@ Channel/Settings
 ----------------
 
 ``c:channel``, ``c:channels``, and ``/settings`` both provide the same functionality, ie providing a way to manage the channels which the bot can send messages in. Here are the parameters you can use in ``c:channel`` and ``c:channels``, you can also view them by doing ``c:channel help``
-
-<br>
 
 ``c:channel help`` : Shows this message
 
