@@ -8,4 +8,6 @@ Contents
 
 .. toctree::
 
-   index
+   Introduction
+   Quickstart
+   Commands
