@@ -3,7 +3,7 @@
 # -- Project information
 
 project = 'DiscordCatBot'
-copyright = None
+copyright = 'Lol'
 author = 'MSR8'
 
 
