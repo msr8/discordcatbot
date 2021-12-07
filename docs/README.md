@@ -54,11 +54,11 @@ Lets explore these commands a bit more
 
 ## Cat
 
-`c:cat`, `c:cute`, `c:ket`, and `/cat` both do the same thing, ie send you a cat pic/vid. To send it, the channel where the command is ran should be an allowed channel. You can also DM the bot `c:cat` to recieve a cat pic/vid :)
+`c:cat`, `c:cute`, `c:ket`, and `/cat` both do the same thing, ie send you a cat pic/vid. To send it, the channel where the command is ran should be an allowed channel. You can also DM the bot `c:cat` to receive a cat pic/vid :)
 
 ## Channel/Settings
 
-`c:channel`, `c:channels`, and `/settings` both provide the same functionality, ie providing a way to manage the channels whic the bot can send messages in. Here are the parameters you can use in `c:channel` and `c:channels`, you can also view them by doing `c:channel help`
+`c:channel`, `c:channels`, and `/settings` both provide the same functionality, ie providing a way to manage the channels which the bot can send messages in. Here are the parameters you can use in `c:channel` and `c:channels`, you can also view them by doing `c:channel help`
 
 <br>
 
@@ -80,7 +80,7 @@ Lets explore these commands a bit more
 
 # More Support
 
-If you still are having issues with the bot, join our discord support server or send a message to me, MSR8#0827
+If you still are having issues with the bot, join the discord support server or send a message to me, MSR8#0827
 
 
 
