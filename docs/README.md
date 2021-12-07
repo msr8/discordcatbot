@@ -20,11 +20,11 @@ The following commands are available:
 
 <br>
 
-`c:?` | `c:h` | `c:help` | `c:list` : Gives you a list of available commands
+|`c:?` | `c:h` | `c:help` | `c:list`| : Gives you a list of available commands
 
 `c:ping` : Pings the bot and tells you its latency
 
-`c:info` | `c:about` : Tells stuff about the bot
+`c:info` \| `c:about` : Tells stuff about the bot
 
 `c:channel help` | `c:channels help` : Shows the commands used to set up this bot
 
