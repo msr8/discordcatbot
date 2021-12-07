@@ -1,4 +1,5 @@
-# Quickstart
+Quickstart
+==========
 
 **NOTE: You must have the Manage Channels permission to use the channel command**
 

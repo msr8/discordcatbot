@@ -1,4 +1,5 @@
-# Commands
+Commands
+========
 
 The following commands are available:
 
