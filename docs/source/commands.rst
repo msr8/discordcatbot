@@ -1,9 +1,12 @@
+.. role:: raw-html(raw)
+    :format: html
+
 Commands
 ========
 
 The following commands are available:
 
-<br>
+:raw-html:`<br />`
 
 ``c:?`` | ``c:h`` | ``c:help`` | ``c:list`` : Gives you a list of available commands
 
@@ -23,29 +26,33 @@ The following commands are available:
 
 ``/settings`` : Basically ``c:channel`` but GUI
 
-<br>
+:raw-html:`<br />`
 
 Lets explore these commands a bit more
 
-<br>
+:raw-html:`<br />`
 
-## Help
+Help
+----
 
 ``c:help`` and ``/help`` are pretty self explanatory, they just give you a list of all the available commands
 
-## About
+About
+-----
 
 ``c:about`` and ``/about`` sends you an embed of info about this bot, including support links and statistics of the bot
 
-## Cat
+Cat
+---
 
 ``c:cat``, ``c:cute``, ``c:ket``, and ``/cat`` both do the same thing, ie send you a cat pic/vid. To send it, the channel where the command is ran should be an allowed channel. You can also DM the bot ``c:cat`` to receive a cat pic/vid :)
 
-## Channel/Settings
+Channel/Settings
+----------------
 
 ``c:channel``, ``c:channels``, and ``/settings`` both provide the same functionality, ie providing a way to manage the channels which the bot can send messages in. Here are the parameters you can use in ``c:channel`` and ``c:channels``, you can also view them by doing ``c:channel help``
 
-<br>
+:raw-html:`<br />`
 
 ``c:channel help`` : Shows this message
 
