@@ -1,5 +1,9 @@
+from discord_slash.utils.manage_components import create_button, create_actionrow, wait_for_component, create_select, create_select_option
+from discord_slash import SlashCommand, SlashContext
 from secret_stuff import TOKEN, PICS_PATH, PEOPLE
+from discord_slash.model import ButtonStyle
 from discord.ext import commands, tasks
+import asyncio
 import random as r
 import time as t
 import discord
@@ -7,7 +11,9 @@ import os
 
 
 PREFIX = 'c:'
-INVITE_LINK = 'https://discord.com/api/oauth2/authorize?client_id=893261717155500082&permissions=274878023680&scope=bot'
+INVITE_LINK = 'https://discord.com/api/oauth2/authorize?client_id=893261717155500082&permissions=274878024704&scope=applications.commands%20bot' # With perms 274878024704
+GITHUB_LINK = 'https://github.com/msr8/discordcatbot'
+GUILD_IDS = [845199962450034728]
 DATA = os.path.join( os.path.dirname(__file__) , 'DATA' )
 CHANNELS = os.path.join( DATA, 'channels' )
 P = PREFIX
@@ -16,12 +22,19 @@ HELP = f'''`{P}?` | `{P}h` | `{P}help` | `{P}list` : Gives you a list of availab
 `{P}ping` : Pings the bot and tells you its latency
 `{P}info` | `{P}about` : Tells stuff about the bot
 `{P}channel help` | `{P}channels help` : Shows the commands used to set up this bot
-`{P}cute` | `{P}cat` | `{P}ket` : Sends you a pic/vid of a cute animal (mostly cats)'''
+`{P}cute` | `{P}cat` | `{P}ket` : Sends you a pic/vid of a cute animal (mostly cats)
+\n__SLASH COMMANDS__\n
+`/help` : Gives you a list of available commands
+`/about` : Tells stuff about the bot
+`/cat` : Sends you a pic/vid of a cute animal (mostly cats)
+`/settings` : Basically `{P}channel` but GUI
+'''
 
 CHANNEL_HELP = help_text = f'''`{P}channel help` : Shows this message
 `{P}channel <list | ls>` : Shows all the allowed channels in this server
 `{P}channel allow <channel>` or `{P}channel add <channel>` : Allows a channel
-`{P}channel disallow <channel>` or `{P}channel remove <channel>` : Disallows a channel'''
+`{P}channel disallow <channel>` or `{P}channel remove <channel>` : Disallows a channel
+`{P}channel flush` : Removes all the deleted channels from our database'''
 
 
 
@@ -43,6 +56,11 @@ class CustomHelpCommand(commands.DefaultHelpCommand):
 
 
 bot = commands.Bot( command_prefix=PREFIX, help_command=CustomHelpCommand() )
+slash = SlashCommand(bot, sync_commands=True)
+
+
+
+
 
 
 
@@ -75,14 +93,15 @@ async def send_dm(ctx):
 	channels = get_channels(guild)
 	# If there are no allowed channels
 	if not len(channels):
-		to_send = f'I am not allowed to send messages in this server ({guild.name}). If you want me to send messages in this server, contact the mods of this server. If you are a mod and are trying to set me up in your server, do `c:channel add <channel>` with the channel you want to allow me to send messages in. In case of any further queries, check out my [GitHub](https://github.com/msr8/discordcatbot)'
+		to_send = f'I am not allowed to send messages in this server ({guild.name}). If you want me to send messages in this server, contact the mods of this server. If you are a mod and are trying to set me up in your server, do `c:channel add <channel>` with the channel you want to allow me to send messages in. In case of any further queries, check out my [GitHub]({GITHUB_LINK})'
 	# If there are allowed channels
 	else:
 		to_send = f'I am not allowed to send messages in <#{channel.id}> of the server **{guild.name}**, I can only send messages in the following channels:\n\n'
 		for channel in channels:
 			to_send += f'<#{channel}>\n'
 	# Sends the DM
-	await dm_channel.send(embed=discord.Embed( description=to_send , colour=discord.Colour.red() ))
+	embed=discord.Embed( description=to_send , colour=discord.Colour.red() )
+	await dm_channel.send(embed=embed)
 
 def get_cute_pic_path():
 	# Gets all the files and folders of the main directory where the pictures are stored
@@ -98,7 +117,74 @@ def get_cute_pic_path():
 			eyebleach_valid = True
 	# Returns the valid file path
 	return valid_file
-	
+
+async def make_chc_comp(ctx):
+	channels = ctx.guild.text_channels
+	allowed_channels = [await bot.fetch_channel(i) for i in get_channels(ctx.guild)]
+	for i in allowed_channels:
+		try:
+			channels.remove(i)
+		except:
+			continue
+	options=[]
+	for channel in channels:
+		options.append( create_select_option(channel.name, value=str(channel.id)) )
+	actrow = create_actionrow(create_select( options=options , max_values=len(channels) ))
+	return actrow
+
+async def make_chc_comp_2(ctx):
+	old_channels = get_channels(ctx.guild)
+	channels = []
+	for i in old_channels:
+		try:
+			channels.append(await bot.fetch_channel(i))
+		except:
+			continue
+	options = []
+	for channel in channels:
+		options.append( create_select_option(channel.name, value=str(channel.id)) )
+	actrow = create_actionrow(create_select( options=options , max_values=len(channels) ))
+	return actrow
+
+
+
+
+async def send_cat(ctx):
+	# Checks if its a DM channel
+	if not isinstance(ctx.channel, discord.DMChannel):
+		# Checks if I am allowed to send msges in this channel
+		if not str(ctx.channel.id) in get_channels(ctx.guild):
+			await send_dm(ctx)
+			return
+	await ctx.reply(file=discord.File( get_cute_pic_path() ))
+
+
+async def send_about(ctx, slash_com=False):
+	# if its a slash command, gives in hidden
+	if not slash_com:
+		# Checks if I am allowed to send msges in this channel
+		if not str(ctx.channel.id) in get_channels(ctx.guild):
+			await send_dm(ctx)
+			return
+	embed = discord.Embed( title=f'Information about {bot.user}' , description=f'Hi! I am <@{bot.user.id}> made by <@{PEOPLE["me"]}>. What I basically do is send cat pictures/video whenever you ask me to. To use me, you first have to set me up using `{P}channel` or `/setting`. Then to get cat stuff, you can simply type `{P}cat` or `/cat` in the allowed channels. To see all my commands, do `{P}help` or `/help` if you want to learn more about me or having trouble setting it up, check out my [github]({GITHUB_LINK})\n\nNOTE: I do not claim any ownership of the cats, I most of them through reddit. All of the media used was obtained from public sources' , colour=discord.Colour.blue() )
+	embed.set_author(name=bot.user, icon_url=bot.user.avatar_url)
+	# Adds Name, ID, Prefix, Ping, Total Servers, Owner, Github, Invite
+	embed.add_field(name='Name',value=bot.user)
+	embed.add_field(name='ID',value=bot.user.id)
+	embed.add_field(name='Prefix',value=f'`{PREFIX}`')
+	embed.add_field(name='Ping',value=f'{int(bot.latency*1000)}ms')
+	embed.add_field(name='Total Servers',value=len(bot.guilds))
+	embed.add_field(name='Owner',value=f'<@{PEOPLE["me"]}>')
+	embed.add_field(name='GitHub',value=f'[GitHub]({GITHUB_LINK})')
+	embed.add_field(name='Invite',value=f'[Invite]({INVITE_LINK})')
+	# Sends the Embed
+	if not slash_com:
+		await ctx.reply(embed=embed)
+		return
+	await ctx.reply(embed=embed, hidden=True)
+
+
+
 
 
 
@@ -122,6 +208,10 @@ def get_cute_pic_path():
 # Once ready
 @bot.event
 async def on_ready():
+	# Changing bot's status
+	status = discord.Status.idle
+	activity = discord.Game('with my cat')
+	await bot.change_presence(status=status, activity=activity)
 	print(f'[USING {bot.user}]')
 
 
@@ -140,6 +230,9 @@ async def h(ctx):
 		await send_dm(ctx)
 		return
 	await ctx.reply( f'Commands for <@{bot.user.id}>:\n\n{HELP}' )
+@slash.slash( name='help' , guild_ids=GUILD_IDS , description='Gives you a list of all the available commands' )
+async def help_slash(ctx: SlashContext):
+	await ctx.reply(f'Commands for <@{bot.user.id}>:\n\n{HELP}', hidden=True)
 
 
 
@@ -157,58 +250,39 @@ async def ping(ctx):
 
 
 
-# Info
-@bot.command( aliases=['about'] )
+# About | Info
+@bot.command( aliases=['about'] , description='Tells you stuff about the bot' )
 async def info(ctx):
-	# Checks if I am allowed to send msges in this channel
-	if not str(ctx.channel.id) in get_channels(ctx.guild):
-		await send_dm(ctx)
-		return
-	embed = discord.Embed( title=bot.user , description=f'Information about <@{bot.user.id}>' , colour=discord.Colour.blue() )
-	embed.set_author(name=bot.user, icon_url=bot.user.avatar_url)
-	# Adds Name, ID, Prefix, Ping, Total Servers, Owner, Github, Invite
-	embed.add_field(name='Name',value=bot.user)
-	embed.add_field(name='ID',value=bot.user.id)
-	embed.add_field(name='Prefix',value=PREFIX)
-	embed.add_field(name='Ping',value=f'{int(bot.latency*1000)}ms')
-	embed.add_field(name='Total Servers',value=len(bot.guilds))
-	embed.add_field(name='Owner',value=f'<@{PEOPLE["me"]}>')
-	embed.add_field(name='GitHub',value='[GitHub](https://github.com/msr8/discordcatbot)')
-	embed.add_field(name='Invite',value=f'[Invite]({INVITE_LINK})')
-	# Sends the Embed
-	await ctx.reply(embed=embed)
+	await send_about(ctx)
+@slash.slash( name='about' , guild_ids=GUILD_IDS , description='Tells you stuff about the bot' )
+async def info1(ctx: SlashContext):
+	await send_about(ctx, slash_com=True)
 
 
 
 
-# Cat | Cute
-@bot.command( aliases=['cute','ket'] )
+# Cat | Cute | Ket
+@bot.command( aliases=['cute','ket'] , description='Sends you a picture/video of a cat (mostly)' )
 async def cat(ctx):
-	# Checks if its a DM channel
-	if not isinstance(ctx.channel, discord.DMChannel):
-		# Checks if I am allowed to send msges in this channel
-		if not str(ctx.channel.id) in get_channels(ctx.guild):
-			await send_dm(ctx)
-			return
-	await ctx.reply(file=discord.File( get_cute_pic_path() ))
+	await send_cat(ctx)
+@slash.slash( name='cat' , guild_ids=GUILD_IDS , description='Sends you a picture/video of a cat (mostly)' )
+async def cat1(ctx: SlashContext):
+	await send_cat(ctx)
+
 
 
 
 
 # Channel
-@bot.command( aliases=['channels'] )
+@bot.command( aliases=['channels'] , description=f'Helps you manage which channels the bot can send the message in. Do `{P}channels help` to learn more' )
 async def channel(ctx, setting=None, channel:discord.TextChannel=None):
 	# Checks if author has manage channels permission
 	if not ctx.author.guild_permissions.manage_channels:
 		# Sends a DM explaining they dont have perms
 		dm_channel = await ctx.author.create_dm()
-		await dm_channel.send(embed=discord.Embed( description=f'I am sorry but only people who have the `Manage Channels` permissions can do `{P}channel`. If you think there has been an error, please contact my developer <@{PEOPLE["me"]}> or open up an issue on my [github](https://github.com/msr8/discordcatbot)' , colour=discord.Colour.red() ))
+		await dm_channel.send(embed=discord.Embed( description=f'I am sorry but only people who have the `Manage Channels` permissions can do `{P}channel`. If you think there has been an error, please contact my developer <@{PEOPLE["me"]}> or open up an issue on my [github]({GITHUB_LINK})' , colour=discord.Colour.red() ))
 		return
 
-	# Checks if its a valid setting
-	if setting == None or not setting.lower() in ['help','h','?','list','ls','allow','add','disallow','remove']:
-		await ctx.reply(embed = discord.Embed( description=f'{setting} is not a valid setting, please do `{P}channel help` to view all the valid settings' , colour=discord.Colour.red() ))
-		return
 	setting = setting.lower()
 
 	# Help
@@ -230,6 +304,20 @@ async def channel(ctx, setting=None, channel:discord.TextChannel=None):
 			for channel in channels:
 				channel_text += f'<#{channel}>\n'
 			await ctx.reply(embed=discord.Embed( description=channel_text , colour=discord.Colour.blue() ))
+
+	# Flush
+	elif setting in ['flush']:
+		channels = get_channels(ctx.guild)
+		channels = [str(i) for i in channels]
+		count = 0
+		for i in channels:
+			try:
+				channel = await bot.fetch_channel(i)
+			except:
+				channels.remove(i)
+				count += 1
+		dump_channels(channels, ctx.guild)
+		await ctx.reply(embed=discord.Embed( description='No deleted channels found' if count==0 else f'{count} deleted channel(s) removed'  , colour=discord.Colour.red() if count==0 else discord.Colour.blue()  ))
 
 	# Allow
 	elif setting in ['allow','add']:
@@ -264,13 +352,16 @@ async def channel(ctx, setting=None, channel:discord.TextChannel=None):
 		if not str(channel.id) in channels:
 			ctx.reply(f'<#{channel.id}> is not an allowed channel')
 			return
-		# Adds the channel
+		# Removes the channel
 		channels.remove(str(channel.id))
 		# Dumps the data
 		dump_channels(channels,ctx.guild)
 		# Tells the user its done
 		await ctx.reply(embed=discord.Embed( description=f'<#{channel.id}> has been succesfully removed from the list of allowed channels' , colour=discord.Colour.blue() ))
 
+	# Not a valid option
+	else:
+		await ctx.reply(embed = discord.Embed( description=f'{setting} is not a valid setting, please do `{P}channel help` to view all the valid settings' , colour=discord.Colour.red() ))
 
 
 
@@ -278,6 +369,114 @@ async def channel(ctx, setting=None, channel:discord.TextChannel=None):
 
 
 
+async def settings_func(ctx):
+	# Checks if author has manage channels permission
+	if not ctx.author.guild_permissions.manage_channels:
+		# Tells them that they need perms
+		await ctx.reply(f'I am sorry but only people who have the `Manage Channels` permissions can do `/settings`. If you think there has been an error, please contact my developer <@{PEOPLE["me"]}> or open up an issue on my [github]({GITHUB_LINK})', hidden=True)
+		return
+
+	chc_actrow = create_actionrow(
+		create_button(style=ButtonStyle.blue, label='Help'),
+		create_button(style=ButtonStyle.blue, label='List'),
+		create_button(style=ButtonStyle.blue, label='Allow a channel'),
+		create_button(style=ButtonStyle.blue, label='Disallow a channel'),
+		create_button(style=ButtonStyle.blue, label='Flush'),
+		)
+	chc_actrow2 = create_actionrow(create_button(style=ButtonStyle.blue, label='Exit'))
+	embed = discord.Embed( description='Please select what you want to do' , colour=discord.Colour.blue() )
+	await ctx.reply(embed=embed, components=[chc_actrow,chc_actrow2])
+	# Checks if the author is clicking the buttons
+	while True:
+		comp_ctx:ComponentContext = await wait_for_component(bot, components=[chc_actrow,chc_actrow2])
+		if ctx.author.id == comp_ctx.author.id:
+			break
+	chc = comp_ctx.component['label']
+	
+	if chc == 'Help':
+		embed = discord.Embed( description='**Help:** Shows this message\n**List:** Shows all the allowed channels in this server\n**Allow:** Allows a channel\n**Disallow:** Disallows a channel\n**Flush:** Removes all the deleted channels from our database' , colour=discord.Colour.blue() )
+		await comp_ctx.edit_origin(embed=embed, components=None, hidden=True)
+	
+	elif chc == 'List':
+		# Gets the channels
+		channels = get_channels(ctx.guild)
+		channels = [str(i) for i in channels]
+		# Checks if there are no channels
+		if not len(channels):
+			channel_text = 'There are no allowed channels for this server'
+		else:
+			channel_text = f'**Allowed channels for {ctx.guild}:**\n\n'
+			for channel in channels:
+				channel_text += f'<#{channel}>\n'
+		embed = discord.Embed( description=channel_text , colour=discord.Colour.blue() )
+		await comp_ctx.edit_origin(embed=embed, components=[])
+
+	elif chc == 'Allow a channel':
+		allow_actrow = await make_chc_comp(ctx)
+		await comp_ctx.edit_origin(components=[allow_actrow])
+		# Checks if the author is clicking the buttons
+		while True:
+			comp_ctx:ComponentContext = await wait_for_component(bot, components=[allow_actrow])
+			if ctx.author.id == comp_ctx.author.id:
+				break
+		allow_chc = comp_ctx.selected_options
+		# Gets old channels
+		channels = get_channels(ctx.guild)
+		# Adds channels
+		for channel in allow_chc:
+			if channel not in channels:
+				channels.append(channel)
+		# Dumps the data
+		dump_channels(channels, ctx.guild)
+		# Tells the user its done
+		embed = discord.Embed( description='Success!' , colour=discord.Colour.blue() )
+		await comp_ctx.edit_origin(embed=embed, components=[])
+
+	elif chc == 'Disallow a channel':
+		disallow_actrow = await make_chc_comp_2(ctx)
+		await comp_ctx.edit_origin(components=[disallow_actrow])
+		# Checks if the author is clicking the buttons
+		while True:
+			comp_ctx:ComponentContext = await wait_for_component(bot, components=[disallow_actrow])
+			if ctx.author.id == comp_ctx.author.id:
+				break
+		disallow_chc = comp_ctx.selected_options
+		# Gets the old channels
+		channels = get_channels(ctx.guild)
+		# Removes channels
+		for channel in disallow_chc:
+			if channel in channels:
+				channels.remove(channel)
+		# Dumps the data
+		dump_channels(channels, ctx.guild)
+		# Tells the user its done
+		embed = discord.Embed( description='Success!' , colour=discord.Colour.blue() )
+		await comp_ctx.edit_origin(embed=embed, components=[])
+
+	elif chc == 'Flush':
+		channels = get_channels(ctx.guild)
+		channels = [str(i) for i in channels]
+		count = 0
+		for i in channels:
+			try:
+				channel = await bot.fetch_channel(i)
+			except:
+				channels.remove(i)
+				count += 1
+		dump_channels(channels, ctx.guild)
+		# Tells the user its done
+		embed = discord.Embed( description='No deleted channels found' if count==0 else f'Success! {count} deleted channel(s) removed' , colour=discord.Colour.blue() )
+		await comp_ctx.edit_origin(embed=embed, components=[])
+
+	elif chc == 'Exit':
+		await comp_ctx.origin_message.delete()
+
+
+
+
+@slash.slash( name='settings' , guild_ids=GUILD_IDS , description='Configure the bot' )
+async def settings(ctx: SlashContext):
+	await settings_func(ctx)
 
 
 

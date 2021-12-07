@@ -8,9 +8,11 @@ This is a WIP (Work in progress) discord bot that sends a random cute animal (mo
 
 - [x] Add the abilty to send the media in DMs
 
-- [ ] Add a "flush" option in `c:channel` which removes all the deleted channels
+- [x] Add a "flush" option in `c:channel` which removes all the deleted channels
 
-- [ ] Add `/cat` and/or other slash commands
+- [x] Add `/cat` and/or other slash commands
+
+- [ ] Make the bot message the owner after joining a guild
 
 - [ ] Make a proper documentation/guide/tutorial on how to setup and use the bot
 
