@@ -8,6 +8,7 @@ Contents
 
 .. toctree::
 
-   Introduction
-   Quickstart
-   Commands
+   index
+   quickstart
+   commands
+   support
