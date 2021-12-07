@@ -6,7 +6,7 @@ Commands
 
 The following commands are available:
 
-<br>
+:raw-html:`<br />`
 
 ``c:?`` | ``c:h`` | ``c:help`` | ``c:list`` : Gives you a list of available commands
 
@@ -26,7 +26,7 @@ The following commands are available:
 
 ``/settings`` : Basically ``c:channel`` but GUI
 
-<br>
+:raw-html:`<br />`
 
 Lets explore these commands a bit more
 
