@@ -8,7 +8,6 @@ Contents
 
 .. toctree::
 
-   index
    quickstart
    commands
    support
