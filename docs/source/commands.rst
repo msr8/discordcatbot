@@ -9,7 +9,7 @@ The following commands are available:
 
 ``c:ping`` : Pings the bot and tells you its latency
 
-``c:info`` | `c:about`` : Tells stuff about the bot
+``c:info`` | ``c:about`` : Tells stuff about the bot
 
 ``c:channel help`` | `c:channels help`` : Shows the commands used to set up this bot
 
