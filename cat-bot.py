@@ -3,19 +3,19 @@ from discord_slash import SlashCommand, SlashContext
 from secret_stuff import TOKEN, PICS_PATH, PEOPLE
 from discord_slash.model import ButtonStyle
 from discord.ext import commands, tasks
-import asyncio
 import random as r
 import time as t
 import discord
+import json
 import os
 
 
 PREFIX = 'c:'
 INVITE_LINK = 'https://discord.com/api/oauth2/authorize?client_id=893261717155500082&permissions=274878024704&scope=applications.commands%20bot' # With perms 274878024704
 GITHUB_LINK = 'https://github.com/msr8/discordcatbot'
-GUILD_IDS = [845199962450034728]
 DATA = os.path.join( os.path.dirname(__file__) , 'DATA' )
 CHANNELS = os.path.join( DATA, 'channels' )
+GUILDS_FILE = os.path.join( DATA, 'guilds.txt' )
 P = PREFIX
 
 HELP = f'''`{P}?` | `{P}h` | `{P}help` | `{P}list` : Gives you a list of available commands
@@ -85,6 +85,32 @@ def dump_channels(channels, guild):
 	with open(file_path,'w') as f:
 		f.write(to_dump)
 
+def get_guilds():
+	# Checks if its exists
+	if not os.path.exists(GUILDS_FILE):
+		return []
+	# Gets the data
+	with open(GUILDS_FILE) as f:
+		ret = f.readlines()
+	# Converts it to int
+	ret = [int(i) for i in ret]
+	return ret
+
+def dump_guilds(guilds):
+	# Comverts it to str
+	lis = guilds.copy()
+	lis = [str(i) for i in lis]
+	to_dump = '\n'.join(lis)
+	# Writes the data
+	with open(GUILDS_FILE,'w') as f:
+		f.write(to_dump)
+
+def refresh_guilds():
+	ret = []
+	for guild in bot.guilds:
+		ret.append(guild.id)
+	dump_guilds(ret)
+
 async def send_dm(ctx):
 	# Gets all the attributes
 	dm_channel = await ctx.author.create_dm()
@@ -150,10 +176,14 @@ async def make_chc_comp_2(ctx):
 
 
 async def send_cat(ctx):
-	# Checks if its a DM channel
+	# Checks if its not a DM channel
 	if not isinstance(ctx.channel, discord.DMChannel):
-		# Checks if I am allowed to send msges in this channel
+		# Checks if I am not allowed to send msges in this channel
 		if not str(ctx.channel.id) in get_channels(ctx.guild):
+			# Checks if its a slash command:
+			if isinstance(ctx, SlashContext):
+				await ctx.reply(file=discord.File( get_cute_pic_path() ), hidden=True)
+				return
 			await send_dm(ctx)
 			return
 	await ctx.reply(file=discord.File( get_cute_pic_path() ))
@@ -202,17 +232,41 @@ async def send_about(ctx, slash_com=False):
 
 
 
-
+GUILD_IDS = get_guilds()
 
 
 # Once ready
 @bot.event
 async def on_ready():
+	# Refreshes guilds
+	refresh_guilds()
 	# Changing bot's status
 	status = discord.Status.idle
 	activity = discord.Game('with my cat')
 	await bot.change_presence(status=status, activity=activity)
 	print(f'[USING {bot.user}]')
+	print(GUILD_IDS)
+
+# When joined a guild
+@bot.event
+async def on_guild_join(guild):
+	# Gets the DM channel of the owner
+	owner = await bot.fetch_user( guild.owner_id )
+	dm_channel = await owner.create_dm()
+	# Sends them an introduction
+	embed = discord.Embed( title='About me' , description=f'Hello! I am <@{bot.user.id}>! To use me, you can tell me which channels I am allowed send messages in by doing `c:channel add <channel>` or using `/settings` (I would reccomend using normal commands instead of slash commands because in the current state, slash commands are a lil bit glitchy). Once the channel is allowed, you can do `c:cat` or `/cat` to get a picture/video of a cat (mostly). To view all of my commands, you can do `c:help` or `/help`. For futher help, check out my [github]({GITHUB_LINK}) or contact my owner <@{PEOPLE["me"]}>. Thank you for inviting me to **{guild}** :)' , colour=0xb00b69 )
+	await dm_channel.send(embed=embed)
+	# Adds it to the list
+	guilds = get_guilds()
+	guilds.append(guild.id)
+	dump_guilds(guilds)
+	# Tells my owner I joined the server
+	my_owner = await bot.fetch_user( PEOPLE['me'] )
+	dm_channel = await my_owner.create_dm()
+	await dm_channel.send(f'<@{owner.id}> just added me to **{guild.name}**!')
+
+
+
 
 
 
@@ -504,6 +558,7 @@ async def settings(ctx: SlashContext):
 for path in [DATA,CHANNELS]:
 	if not os.path.exists(path):
 		os.makedirs(path)
+
 
 
 

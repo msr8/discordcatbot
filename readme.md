@@ -12,7 +12,7 @@ This is a WIP (Work in progress) discord bot that sends a random cute animal (mo
 
 - [x] Add `/cat` and/or other slash commands
 
-- [ ] Make the bot message the owner after joining a guild
+- [x] Make the bot message the owner after joining a guild
 
 - [ ] Make a proper documentation/guide/tutorial on how to setup and use the bot
 
