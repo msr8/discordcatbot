@@ -16,6 +16,8 @@ This is a WIP (Work in progress) discord bot that sends a random cute animal (mo
 
 - [ ] Make a proper documentation/guide/tutorial on how to setup and use the bot
 
+- [ ] Update README.md
+
 - [ ] Get it up and running
 
 - [ ] Register it on sites like top.gg

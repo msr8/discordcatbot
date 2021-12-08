@@ -80,7 +80,7 @@ Lets explore these commands a bit more
 
 # More Support
 
-If you still are having issues with the bot, join the discord support server or send a message to me, MSR8#0827
+If you still are having issues with the bot, join the [discord support server](https://discord.gg/aGUvpSxMz5) or check out my [GitHub](https://github.com/msr8/discordcatbot)
 
 
 

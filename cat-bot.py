@@ -10,12 +10,15 @@ import json
 import os
 
 
+# Documentation, github, support server, Invite
 PREFIX = 'c:'
-INVITE_LINK = 'https://discord.com/api/oauth2/authorize?client_id=893261717155500082&permissions=274878024704&scope=applications.commands%20bot' # With perms 274878024704
-GITHUB_LINK = 'https://github.com/msr8/discordcatbot'
 DATA = os.path.join( os.path.dirname(__file__) , 'DATA' )
 CHANNELS = os.path.join( DATA, 'channels' )
 GUILDS_FILE = os.path.join( DATA, 'guilds.txt' )
+GITHUB_LINK = 'https://github.com/msr8/discordcatbot'
+DOCUMENTATION_LINK = 'https://msr8.github.io/discordcatbot/'
+SERVER_INVITE = 'https://discord.gg/aGUvpSxMz5'
+BOT_INVITE_LINK = 'https://discord.com/api/oauth2/authorize?client_id=893261717155500082&permissions=274878024704&scope=applications.commands%20bot' # With perms 274878024704
 P = PREFIX
 
 HELP = f'''`{P}?` | `{P}h` | `{P}help` | `{P}list` : Gives you a list of available commands
@@ -35,6 +38,13 @@ CHANNEL_HELP = help_text = f'''`{P}channel help` : Shows this message
 `{P}channel allow <channel>` or `{P}channel add <channel>` : Allows a channel
 `{P}channel disallow <channel>` or `{P}channel remove <channel>` : Disallows a channel
 `{P}channel flush` : Removes all the deleted channels from our database'''
+
+LINK_ACTROW = create_actionrow(
+	create_button(style=ButtonStyle.URL, label='Documentation',		url=DOCUMENTATION_LINK	),
+	create_button(style=ButtonStyle.URL, label='GitHub',			url=GITHUB_LINK			),
+	create_button(style=ButtonStyle.URL, label='Support Server',	url=SERVER_INVITE		),
+	create_button(style=ButtonStyle.URL, label='Bot Invite',		url=BOT_INVITE_LINK		),
+	)
 
 
 
@@ -96,21 +106,6 @@ def get_guilds():
 	ret = [int(i) for i in ret]
 	return ret
 
-def dump_guilds(guilds):
-	# Comverts it to str
-	lis = guilds.copy()
-	lis = [str(i) for i in lis]
-	to_dump = '\n'.join(lis)
-	# Writes the data
-	with open(GUILDS_FILE,'w') as f:
-		f.write(to_dump)
-
-def refresh_guilds():
-	ret = []
-	for guild in bot.guilds:
-		ret.append(guild.id)
-	dump_guilds(ret)
-
 async def send_dm(ctx):
 	# Gets all the attributes
 	dm_channel = await ctx.author.create_dm()
@@ -119,15 +114,17 @@ async def send_dm(ctx):
 	channels = get_channels(guild)
 	# If there are no allowed channels
 	if not len(channels):
-		to_send = f'I am not allowed to send messages in this server ({guild.name}). If you want me to send messages in this server, contact the mods of this server. If you are a mod and are trying to set me up in your server, do `c:channel add <channel>` with the channel you want to allow me to send messages in. In case of any further queries, check out my [GitHub]({GITHUB_LINK})'
+		to_send = f'I am not allowed to send messages in this server ({guild.name}). If you want me to send messages in this server, contact the mods of this server. If you are a mod and are trying to set me up in your server, do `c:channel add <channel>` with the channel you want to allow me to send messages in. In case of any further queries, please check out the links given below'
+		components = [LINK_ACTROW]
 	# If there are allowed channels
 	else:
 		to_send = f'I am not allowed to send messages in <#{channel.id}> of the server **{guild.name}**, I can only send messages in the following channels:\n\n'
 		for channel in channels:
 			to_send += f'<#{channel}>\n'
+		components = []
 	# Sends the DM
 	embed=discord.Embed( description=to_send , colour=discord.Colour.red() )
-	await dm_channel.send(embed=embed)
+	await dm_channel.send(embed=embed, components=components)
 
 def get_cute_pic_path():
 	# Gets all the files and folders of the main directory where the pictures are stored
@@ -196,17 +193,19 @@ async def send_about(ctx, slash_com=False):
 		if not str(ctx.channel.id) in get_channels(ctx.guild):
 			await send_dm(ctx)
 			return
-	embed = discord.Embed( title=f'Information about {bot.user}' , description=f'Hi! I am <@{bot.user.id}> made by <@{PEOPLE["me"]}>. What I basically do is send cat pictures/video whenever you ask me to. To use me, you first have to set me up using `{P}channel` or `/setting`. Then to get cat stuff, you can simply type `{P}cat` or `/cat` in the allowed channels. To see all my commands, do `{P}help` or `/help` if you want to learn more about me or having trouble setting it up, check out my [github]({GITHUB_LINK})\n\nNOTE: I do not claim any ownership of the cats, I most of them through reddit. All of the media used was obtained from public sources' , colour=discord.Colour.blue() )
+	embed = discord.Embed( title=f'Information about {bot.user}' , description=f'Hi! I am <@{bot.user.id}> made by <@{PEOPLE["me"]}>. What I basically do is send cat pictures/video whenever you ask me to. To use me, you first have to set me up using `{P}channel` or `/setting`. Then to get cat stuff, you can simply type `{P}cat` or `/cat` in the allowed channels. To see all my commands, do `{P}help` or `/help` if you want to learn more about me or having trouble setting it up, check out the links below :)\n\nNOTE: I do not claim any ownership of the cats, I most of them through reddit. All of the media used was obtained from public sources' , colour=discord.Colour.blue() )
 	embed.set_author(name=bot.user, icon_url=bot.user.avatar_url)
 	# Adds Name, ID, Prefix, Ping, Total Servers, Owner, Github, Invite
-	embed.add_field(name='Name',value=bot.user)
-	embed.add_field(name='ID',value=bot.user.id)
-	embed.add_field(name='Prefix',value=f'`{PREFIX}`')
-	embed.add_field(name='Ping',value=f'{int(bot.latency*1000)}ms')
-	embed.add_field(name='Total Servers',value=len(bot.guilds))
-	embed.add_field(name='Owner',value=f'<@{PEOPLE["me"]}>')
-	embed.add_field(name='GitHub',value=f'[GitHub]({GITHUB_LINK})')
-	embed.add_field(name='Invite',value=f'[Invite]({INVITE_LINK})')
+	embed.add_field(name='Name',			value=bot.user									)
+	embed.add_field(name='ID',				value=bot.user.id								)
+	embed.add_field(name='Prefix',			value=f'`{PREFIX}`'								)
+	embed.add_field(name='Ping',			value=f'{int(bot.latency*1000)}ms'				)
+	embed.add_field(name='Total Servers',	value=len(bot.guilds)							)
+	embed.add_field(name='Owner',			value=f'<@{PEOPLE["me"]}>'						)
+	embed.add_field(name='Documentation',	value=f'[Documentation]({DOCUMENTATION_LINK})'	)
+	embed.add_field(name='GitHub',			value=f'[GitHub]({GITHUB_LINK})'				)
+	embed.add_field(name='Support Server',	value=f'[Support Server]({SERVER_INVITE})'		)
+	embed.add_field(name='Bot Invite',		value=f'[Invite]({BOT_INVITE_LINK})'			)
 	# Sends the Embed
 	if not slash_com:
 		await ctx.reply(embed=embed)
@@ -232,20 +231,18 @@ async def send_about(ctx, slash_com=False):
 
 
 
-GUILD_IDS = get_guilds()
+
 
 
 # Once ready
 @bot.event
 async def on_ready():
-	# Refreshes guilds
-	refresh_guilds()
 	# Changing bot's status
 	status = discord.Status.idle
 	activity = discord.Game('with my cat')
 	await bot.change_presence(status=status, activity=activity)
 	print(f'[USING {bot.user}]')
-	print(GUILD_IDS)
+	print( '\n'.join( [f'{i.id} : {i.name}' for i in bot.guilds] ) )
 
 # When joined a guild
 @bot.event
@@ -254,12 +251,8 @@ async def on_guild_join(guild):
 	owner = await bot.fetch_user( guild.owner_id )
 	dm_channel = await owner.create_dm()
 	# Sends them an introduction
-	embed = discord.Embed( title='About me' , description=f'Hello! I am <@{bot.user.id}>! To use me, you can tell me which channels I am allowed send messages in by doing `c:channel add <channel>` or using `/settings` (I would reccomend using normal commands instead of slash commands because in the current state, slash commands are a lil bit glitchy). Once the channel is allowed, you can do `c:cat` or `/cat` to get a picture/video of a cat (mostly). To view all of my commands, you can do `c:help` or `/help`. For futher help, check out my [github]({GITHUB_LINK}) or contact my owner <@{PEOPLE["me"]}>. Thank you for inviting me to **{guild}** :)' , colour=0xb00b69 )
-	await dm_channel.send(embed=embed)
-	# Adds it to the list
-	guilds = get_guilds()
-	guilds.append(guild.id)
-	dump_guilds(guilds)
+	embed = discord.Embed( title='About me' , description=f'Hello! I am <@{bot.user.id}>! To use me, you can tell me which channels I am allowed send messages in by doing `c:channel add <channel>` or using `/settings` (I would reccomend using normal commands instead of slash commands because in the current state, slash commands are a lil bit glitchy). Once the channel is allowed, you can do `c:cat` or `/cat` to get a picture/video of a cat (mostly). To view all of my commands, you can do `c:help` or `/help`. For futher help, check out the links given below. Thank you for inviting me to **{guild}** :)' , colour=0xb00b69 )
+	await dm_channel.send(embed=embed, components=[LINK_ACTROW])
 	# Tells my owner I joined the server
 	my_owner = await bot.fetch_user( PEOPLE['me'] )
 	dm_channel = await my_owner.create_dm()
@@ -283,10 +276,10 @@ async def h(ctx):
 	if not str(ctx.channel.id) in get_channels(ctx.guild):
 		await send_dm(ctx)
 		return
-	await ctx.reply( f'Commands for <@{bot.user.id}>:\n\n{HELP}' )
-@slash.slash( name='help' , guild_ids=GUILD_IDS , description='Gives you a list of all the available commands' )
+	await ctx.reply( f'Commands for <@{bot.user.id}>:\n\n{HELP}', components=[LINK_ACTROW] )
+@slash.slash( name='help' , description='Gives you a list of all the available commands' )
 async def help_slash(ctx: SlashContext):
-	await ctx.reply(f'Commands for <@{bot.user.id}>:\n\n{HELP}', hidden=True)
+	await ctx.reply(f'Commands for <@{bot.user.id}>:\n\n{HELP}', components=[LINK_ACTROW], hidden=True)
 
 
 
@@ -308,7 +301,7 @@ async def ping(ctx):
 @bot.command( aliases=['about'] , description='Tells you stuff about the bot' )
 async def info(ctx):
 	await send_about(ctx)
-@slash.slash( name='about' , guild_ids=GUILD_IDS , description='Tells you stuff about the bot' )
+@slash.slash( name='about' , description='Tells you stuff about the bot' )
 async def info1(ctx: SlashContext):
 	await send_about(ctx, slash_com=True)
 
@@ -319,7 +312,7 @@ async def info1(ctx: SlashContext):
 @bot.command( aliases=['cute','ket'] , description='Sends you a picture/video of a cat (mostly)' )
 async def cat(ctx):
 	await send_cat(ctx)
-@slash.slash( name='cat' , guild_ids=GUILD_IDS , description='Sends you a picture/video of a cat (mostly)' )
+@slash.slash( name='cat' , description='Sends you a picture/video of a cat (mostly)' )
 async def cat1(ctx: SlashContext):
 	await send_cat(ctx)
 
@@ -334,7 +327,8 @@ async def channel(ctx, setting=None, channel:discord.TextChannel=None):
 	if not ctx.author.guild_permissions.manage_channels:
 		# Sends a DM explaining they dont have perms
 		dm_channel = await ctx.author.create_dm()
-		await dm_channel.send(embed=discord.Embed( description=f'I am sorry but only people who have the `Manage Channels` permissions can do `{P}channel`. If you think there has been an error, please contact my developer <@{PEOPLE["me"]}> or open up an issue on my [github]({GITHUB_LINK})' , colour=discord.Colour.red() ))
+		embed=discord.Embed( description=f'I am sorry but only people who have the `Manage Channels` permissions can do `{P}channel`. If you think there has been an error, please check the links given below' , colour=discord.Colour.red() )
+		await dm_channel.send(embed=embed, components=[LINK_ACTROW])
 		return
 
 	setting = setting.lower()
@@ -427,7 +421,7 @@ async def settings_func(ctx):
 	# Checks if author has manage channels permission
 	if not ctx.author.guild_permissions.manage_channels:
 		# Tells them that they need perms
-		await ctx.reply(f'I am sorry but only people who have the `Manage Channels` permissions can do `/settings`. If you think there has been an error, please contact my developer <@{PEOPLE["me"]}> or open up an issue on my [github]({GITHUB_LINK})', hidden=True)
+		await ctx.reply(f'I am sorry but only people who have the `Manage Channels` permissions can do `/settings`. If you think there has been an error, please check out the links given below', components=[LINK_ACTROW], hidden=True)
 		return
 
 	chc_actrow = create_actionrow(
@@ -528,7 +522,7 @@ async def settings_func(ctx):
 
 
 
-@slash.slash( name='settings' , guild_ids=GUILD_IDS , description='Configure the bot' )
+@slash.slash( name='settings' , description='Configure the bot' )
 async def settings(ctx: SlashContext):
 	await settings_func(ctx)
 
