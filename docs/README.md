@@ -78,9 +78,9 @@ Lets explore these commands a bit more
 
 Watch the full tutorial [here](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%20Final.mov?raw=true)
 
-## Setting up the bot | Using c:channel or /settings
+## Setting up the bot \| Using c:channel or /settings
 
-[![Setting up the bot | Using c:channel or /settings](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%201.gif?raw=true)](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%20Final.mov?raw=true)
+[![Setting up the bot \| Using c:channel or /settings](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%201.gif?raw=true)](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%20Final.mov?raw=true)
 
 ## Using c:cat or /cat
 
