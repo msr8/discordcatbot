@@ -10,7 +10,7 @@ import json
 import os
 
 
-# Documentation, github, support server, Invite
+
 PREFIX = 'c:'
 DATA = os.path.join( os.path.dirname(__file__) , 'DATA' )
 CHANNELS = os.path.join( DATA, 'channels' )
@@ -193,7 +193,7 @@ async def send_about(ctx, slash_com=False):
 		if not str(ctx.channel.id) in get_channels(ctx.guild):
 			await send_dm(ctx)
 			return
-	embed = discord.Embed( title=f'Information about {bot.user}' , description=f'Hi! I am <@{bot.user.id}> made by <@{PEOPLE["me"]}>. What I basically do is send cat pictures/video whenever you ask me to. To use me, you first have to set me up using `{P}channel` or `/setting`. Then to get cat stuff, you can simply type `{P}cat` or `/cat` in the allowed channels. To see all my commands, do `{P}help` or `/help` if you want to learn more about me or having trouble setting it up, check out the links below :)\n\nNOTE: I do not claim any ownership of the cats, I most of them through reddit. All of the media used was obtained from public sources' , colour=discord.Colour.blue() )
+	embed = discord.Embed( title=f'Information about {bot.user}' , description=f'Hi! I am <@{bot.user.id}> made by <@{PEOPLE["me"]}>. What I basically do is send cat pictures/video whenever you ask me to. To use me, you first have to set me up using `{P}channel` or `/setting`. Then to get cat stuff, you can simply type `{P}cat` or `/cat` in the allowed channels. To see all my commands, do `{P}help` or `/help` if you want to learn more about me or having trouble setting it up, check out the links below :)\n\nNOTE: I do not claim any ownership of the cats. All of the media used was obtained from public sources (mostly reddit)' , colour=discord.Colour.blue() )
 	embed.set_author(name=bot.user, icon_url=bot.user.avatar_url)
 	# Adds Name, ID, Prefix, Ping, Total Servers, Owner, Github, Invite
 	embed.add_field(name='Name',			value=bot.user									)

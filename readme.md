@@ -14,7 +14,7 @@ This is a WIP (Work in progress) discord bot that sends a random cute animal (mo
 
 - [x] Make the bot message the owner after joining a guild
 
-- [ ] Make a proper documentation/guide/tutorial on how to setup and use the bot
+- [x] Make a proper documentation/guide/tutorial on how to setup and use the bot
 
 - [ ] Update README.md
 

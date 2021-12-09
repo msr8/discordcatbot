@@ -76,11 +76,23 @@ Lets explore these commands a bit more
 
 # Tutorials
 
+Watch the full tutorial [here](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%20Final.mov?raw=true)
+
+## Setting up the bot | Using c:channel or /settings
+
+[![Setting up the bot | Using c:channel or /settings](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%201.gif?raw=true)](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%20Final.mov?raw=true)
+
+## Using c:cat or /cat
+
+[![Using c:cat or /cat](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%202.gif?raw=true)](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%20Final.mov?raw=true)
+
+## Using other commands
+
+[![Using other commands](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%203.gif?raw=true)](https://github.com/msr8/msr8.github.io/blob/main/discordcatbot-media/Discord%20Cat%20Bot%20Final.mov?raw=true)
+
 <br>
 
 # More Support
 
 If you still are having issues with the bot, join the [discord support server](https://discord.gg/aGUvpSxMz5) or check out my [GitHub](https://github.com/msr8/discordcatbot)
-
-
 
