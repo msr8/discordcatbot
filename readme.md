@@ -38,7 +38,7 @@ If you're still having issues, please watch the [tutorial](https://github.com/ms
 
 - [x] Update README.md
 
-- [ ] Get it up and running
+- [x] Get it up and running
 
 - [ ] Register it on sites like top.gg
 

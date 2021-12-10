@@ -1,6 +1,7 @@
 from discord_slash.utils.manage_components import create_button, create_actionrow, wait_for_component, create_select, create_select_option
 from discord_slash import SlashCommand, SlashContext
 from secret_stuff import TOKEN, PICS_PATH, PEOPLE
+from colorama import init, Fore, Back, Style
 from discord_slash.model import ButtonStyle
 from discord.ext import commands, tasks
 import random as r
@@ -8,6 +9,7 @@ import time as t
 import discord
 import json
 import os
+init()
 
 
 
@@ -19,6 +21,10 @@ GITHUB_LINK = 'https://github.com/msr8/discordcatbot'
 DOCUMENTATION_LINK = 'https://msr8.github.io/discordcatbot/'
 SERVER_INVITE = 'https://discord.gg/aGUvpSxMz5'
 BOT_INVITE_LINK = 'https://discord.com/api/oauth2/authorize?client_id=893261717155500082&permissions=274878024704&scope=applications.commands%20bot' # With perms 274878024704
+RES = Style.RESET_ALL
+GR = Fore.GREEN
+YE = Fore.YELLOW
+uptime_count = 0
 P = PREFIX
 
 HELP = f'''`{P}?` | `{P}h` | `{P}help` | `{P}list` : Gives you a list of available commands
@@ -237,11 +243,17 @@ async def send_about(ctx, slash_com=False):
 # Once ready
 @bot.event
 async def on_ready():
+	global uptime_count
+	uptime_count += 1
+	if uptime_count > 1:
+		# LOG
+		print(f'\n{YE}[{bot.user} is up at {t.asctime()}]{RES}')
+		return
 	# Changing bot's status
 	status = discord.Status.idle
 	activity = discord.Game('with my cat')
 	await bot.change_presence(status=status, activity=activity)
-	print(f'[USING {bot.user}]')
+	print(f'{GR}[USING {bot.user}]{RES}')
 	print( '\n'.join( [f'{i.id} : {i.name}' for i in bot.guilds] ) )
 
 # When joined a guild
