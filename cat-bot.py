@@ -3,7 +3,8 @@ from discord_slash import SlashCommand, SlashContext
 from secret_stuff import TOKEN, PICS_PATH, PEOPLE
 from colorama import init, Fore, Back, Style
 from discord_slash.model import ButtonStyle
-from discord.ext import commands, tasks
+from discord.ext import commands
+import requests as rq
 import random as r
 import time as t
 import discord
@@ -16,7 +17,6 @@ init()
 PREFIX = 'c:'
 DATA = os.path.join( os.path.dirname(__file__) , 'DATA' )
 CHANNELS = os.path.join( DATA, 'channels' )
-GUILDS_FILE = os.path.join( DATA, 'guilds.txt' )
 GITHUB_LINK = 'https://github.com/msr8/discordcatbot'
 DOCUMENTATION_LINK = 'https://msr8.github.io/discordcatbot/'
 SERVER_INVITE = 'https://discord.gg/aGUvpSxMz5'
@@ -100,17 +100,6 @@ def dump_channels(channels, guild):
 	# Writes the data
 	with open(file_path,'w') as f:
 		f.write(to_dump)
-
-def get_guilds():
-	# Checks if its exists
-	if not os.path.exists(GUILDS_FILE):
-		return []
-	# Gets the data
-	with open(GUILDS_FILE) as f:
-		ret = f.readlines()
-	# Converts it to int
-	ret = [int(i) for i in ret]
-	return ret
 
 async def send_dm(ctx):
 	# Gets all the attributes
@@ -218,6 +207,18 @@ async def send_about(ctx, slash_com=False):
 		return
 	await ctx.reply(embed=embed, hidden=True)
 
+
+async def send_fact(ctx):
+	fact = rq.get('https://catfact.ninja/fact').json()['fact']
+	# Checks if I am allowed to send msges in this channel
+	if not str(ctx.channel.id) in get_channels(ctx.guild):
+		# Checks if its a slash command
+		if not isinstance(ctx, SlashContext):
+			await send_dm(ctx)
+			return
+		await ctx.reply(fact, hidden=True)
+	await ctx.reply(fact)
+	
 
 
 
@@ -328,6 +329,16 @@ async def cat(ctx):
 async def cat1(ctx: SlashContext):
 	await send_cat(ctx)
 
+
+
+
+# Fact
+@bot.command( description='Sends you a random fact about cats' )
+async def fact(ctx):
+	await send_fact(ctx)
+@slash.slash( name='fact' , description='Sends you a random fact about cats' )
+async def fact1(ctx: SlashContext):
+	await send_fact(ctx)
 
 
 
