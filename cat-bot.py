@@ -8,7 +8,6 @@ import requests as rq
 import random as r
 import time as t
 import discord
-import json
 import os
 init()
 
@@ -81,6 +80,7 @@ slash = SlashCommand(bot, sync_commands=True)
 
 
 
+cls = lambda: os.system('cls' if SYSTEM=='Windows' else 'clear')
 
 def get_channels(guild):
 	# Gets path of the file
@@ -217,6 +217,7 @@ async def send_fact(ctx):
 			await send_dm(ctx)
 			return
 		await ctx.reply(fact, hidden=True)
+		return
 	await ctx.reply(fact)
 	
 
@@ -579,7 +580,7 @@ for path in [DATA,CHANNELS]:
 
 
 
-
+cls()
 
 bot.run(TOKEN)
 
