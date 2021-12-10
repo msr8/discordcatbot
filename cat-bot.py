@@ -4,6 +4,7 @@ from secret_stuff import TOKEN, PICS_PATH, PEOPLE
 from colorama import init, Fore, Back, Style
 from discord_slash.model import ButtonStyle
 from discord.ext import commands
+import platform as pf
 import requests as rq
 import random as r
 import time as t
@@ -80,7 +81,7 @@ slash = SlashCommand(bot, sync_commands=True)
 
 
 
-cls = lambda: os.system('cls' if SYSTEM=='Windows' else 'clear')
+cls = lambda: os.system('cls' if pf.system()=='Windows' else 'clear')
 
 def get_channels(guild):
 	# Gets path of the file
