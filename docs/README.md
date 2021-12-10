@@ -30,11 +30,15 @@ The following commands are available:
 
 `c:cute` \| `c:cat` \| `c:ket` : Sends you a pic/vid of a cute animal (mostly cats)
 
+`c:fact` : Sends you a random facts about cats
+
 `/help` : Gives you a list of available commands
 
 `/about` : Tells stuff about the bot
 
 `/cat` : Sends you a pic/vid of a cute animal (mostly cats)
+
+`/fact` : Sends you a random facts about cats
 
 `/settings` : Basically `c:channel` but GUI
 
