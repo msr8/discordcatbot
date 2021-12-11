@@ -1,3 +1,4 @@
+import json
 from discord_slash.utils.manage_components import create_button, create_actionrow, wait_for_component, create_select, create_select_option
 from discord_slash import SlashCommand, SlashContext
 from secret_stuff import TOKEN, PICS_PATH, PEOPLE
@@ -5,7 +6,6 @@ from colorama import init, Fore, Back, Style
 from discord_slash.model import ButtonStyle
 from discord.ext import commands
 import platform as pf
-import requests as rq
 import random as r
 import time as t
 import discord
@@ -16,6 +16,7 @@ init()
 
 PREFIX = 'c:'
 DATA = os.path.join( os.path.dirname(__file__) , 'DATA' )
+FACTS = os.path.join( os.path.dirname(__file__) , 'facts.json' )
 CHANNELS = os.path.join( DATA, 'channels' )
 GITHUB_LINK = 'https://github.com/msr8/discordcatbot'
 DOCUMENTATION_LINK = 'https://msr8.github.io/discordcatbot/'
@@ -210,7 +211,8 @@ async def send_about(ctx, slash_com=False):
 
 
 async def send_fact(ctx):
-	fact = rq.get('https://catfact.ninja/fact').json()['fact']
+	with open(FACTS, 'r') as f:
+		fact = r.choice( json.load(f) )
 	# Checks if I am allowed to send msges in this channel
 	if not str(ctx.channel.id) in get_channels(ctx.guild):
 		# Checks if its a slash command
@@ -220,7 +222,7 @@ async def send_fact(ctx):
 		await ctx.reply(fact, hidden=True)
 		return
 	await ctx.reply(fact)
-	
+
 
 
 
@@ -248,15 +250,11 @@ async def send_fact(ctx):
 async def on_ready():
 	global uptime_count
 	uptime_count += 1
-	if uptime_count > 1:
-		# LOG
-		print(f'\n{YE}[{bot.user} is up at {t.asctime()}]{RES}')
-		return
 	# Changing bot's status
 	status = discord.Status.idle
 	activity = discord.Game('with my cat')
 	await bot.change_presence(status=status, activity=activity)
-	print(f'{GR}[USING {bot.user}]{RES}')
+	print(f'{GR}[USING {bot.user}]{RES}' if not uptime_count > 1 else f'\n{YE}[{bot.user} is up at {t.asctime()}]{RES}')
 	print( '\n'.join( [f'{i.id} : {i.name}' for i in bot.guilds] ) )
 
 # When joined a guild
@@ -335,11 +333,12 @@ async def cat1(ctx: SlashContext):
 
 
 # Fact
-@bot.command( description='Sends you a random fact about cats' )
-async def fact(ctx):
+# ALL of the facts were obtained from https://catfact.ninja/, so a massive thanks to them
+@bot.command( name='fact' , description='Sends you a random fact about cats' )
+async def fact1(ctx):
 	await send_fact(ctx)
 @slash.slash( name='fact' , description='Sends you a random fact about cats' )
-async def fact1(ctx: SlashContext):
+async def fact2(ctx: SlashContext):
 	await send_fact(ctx)
 
 
