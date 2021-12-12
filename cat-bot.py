@@ -1,4 +1,3 @@
-import json
 from discord_slash.utils.manage_components import create_button, create_actionrow, wait_for_component, create_select, create_select_option
 from discord_slash import SlashCommand, SlashContext
 from secret_stuff import TOKEN, PICS_PATH, PEOPLE
@@ -9,6 +8,7 @@ import platform as pf
 import random as r
 import time as t
 import discord
+import json
 import os
 init()
 
@@ -33,11 +33,13 @@ HELP = f'''`{P}?` | `{P}h` | `{P}help` | `{P}list` : Gives you a list of availab
 `{P}info` | `{P}about` : Tells stuff about the bot
 `{P}channel help` | `{P}channels help` : Shows the commands used to set up this bot
 `{P}cute` | `{P}cat` | `{P}ket` : Sends you a pic/vid of a cute animal (mostly cats)
+`{P}fact` : Sends you a random fact about cats
 \n__SLASH COMMANDS__\n
 `/help` : Gives you a list of available commands
 `/about` : Tells stuff about the bot
 `/cat` : Sends you a pic/vid of a cute animal (mostly cats)
 `/settings` : Basically `{P}channel` but GUI
+`/fact` : Sends you a random fact about cats
 '''
 
 CHANNEL_HELP = help_text = f'''`{P}channel help` : Shows this message
@@ -254,8 +256,8 @@ async def on_ready():
 	status = discord.Status.idle
 	activity = discord.Game('with my cat')
 	await bot.change_presence(status=status, activity=activity)
-	print(f'{GR}[USING {bot.user}]{RES}' if not uptime_count > 1 else f'\n{YE}[{bot.user} is up at {t.asctime()}]{RES}')
-	print( '\n'.join( [f'{i.id} : {i.name}' for i in bot.guilds] ) )
+	print(f'{GR}[USING {bot.user}]{RES}'+'\n'+'\n'.join([f'{i.id} : {i.name}' for i in bot.guilds]) if not uptime_count > 1 else f'\n{YE}[{bot.user} is up at {t.asctime()}]{RES}')
+
 
 # When joined a guild
 @bot.event
