@@ -209,7 +209,7 @@ async def send_about(ctx, slash_com=False):
 	if not slash_com:
 		await ctx.reply(embed=embed)
 		return
-	await ctx.reply(embed=embed, hidden=True)
+	await ctx.reply(embed=embed, components=[LINK_ACTROW],hidden=True)
 
 
 async def send_fact(ctx):

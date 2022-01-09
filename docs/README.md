@@ -6,6 +6,8 @@ Cat Bot#4474 is a bot which sends you pictures/videos of cats (mostly) in your d
 
 # Quickstart
 
+[![Bot Invite](https://shields.io/badge/invite_the-discord_bot-7289DA?logo=discord&style=for-the-badge)](https://discord.com/api/oauth2/authorize?client_id=893261717155500082&permissions=274878024704&scope=applications.commands%20bot)
+
 **NOTE: You must have the Manage Channels permission to use the channel command**
 
 <br>
