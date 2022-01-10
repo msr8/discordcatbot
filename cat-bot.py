@@ -176,12 +176,14 @@ async def send_cat(ctx):
 	if not isinstance(ctx.channel, discord.DMChannel):
 		# Checks if I am not allowed to send msges in this channel
 		if not str(ctx.channel.id) in get_channels(ctx.guild):
+			print(f'{GR}[LOGGING]{RES} {ctx.author.name}#{ctx.author.discriminator} tried to send a cat where I am not allowed too (Slash: {isinstance(ctx, SlashContext)})')
 			# Checks if its a slash command:
 			if isinstance(ctx, SlashContext):
 				await ctx.reply(file=discord.File( get_cute_pic_path() ), hidden=True)
 				return
 			await send_dm(ctx)
 			return
+	print(f'{GR}[LOGGING]{RES} {ctx.author.name}#{ctx.author.discriminator} got a cat!')
 	await ctx.reply(file=discord.File( get_cute_pic_path() ))
 
 
@@ -192,7 +194,7 @@ async def send_about(ctx, slash_com=False):
 		if not str(ctx.channel.id) in get_channels(ctx.guild):
 			await send_dm(ctx)
 			return
-	embed = discord.Embed( title=f'Information about {bot.user}' , description=f'Hi! I am <@{bot.user.id}> made by <@{PEOPLE["me"]}>. What I basically do is send cat pictures/video whenever you ask me to. To use me, you first have to set me up using `{P}channel` or `/setting`. Then to get cat stuff, you can simply type `{P}cat` or `/cat` in the allowed channels. To see all my commands, do `{P}help` or `/help` if you want to learn more about me or having trouble setting it up, check out the links below :)\n\nNOTE: I do not claim any ownership of the cats. All of the media used was obtained from public sources (mostly reddit)' , colour=discord.Colour.blue() )
+	embed = discord.Embed( title=f'Information about {bot.user}' , description=f'Hi! I am <@{bot.user.id}>. What I basically do is send cat pictures/video whenever you ask me to. To use me, you first have to set me up using `{P}channel` or `/settings`. Then to get cat stuff, you can simply type `{P}cat` or `/cat` in the allowed channels. To see all my commands, do `{P}help` or `/help`. If you want to learn more about me or are having trouble setting it up, check out the links below :)\n\nNOTE: I do not claim any ownership of the cats. All of the media used was obtained from public sources (mostly reddit)' , colour=discord.Colour.blue() )
 	embed.set_author(name=bot.user, icon_url=bot.user.avatar_url)
 	# Adds Name, ID, Prefix, Ping, Total Servers, Owner, Github, Invite
 	embed.add_field(name='Name',			value=bot.user									)
@@ -209,7 +211,7 @@ async def send_about(ctx, slash_com=False):
 	if not slash_com:
 		await ctx.reply(embed=embed)
 		return
-	await ctx.reply(embed=embed, components=[LINK_ACTROW],hidden=True)
+	await ctx.reply(embed=embed, components=[LINK_ACTROW], hidden=True)
 
 
 async def send_fact(ctx):
@@ -271,7 +273,7 @@ async def on_guild_join(guild):
 	# Tells my owner I joined the server
 	my_owner = await bot.fetch_user( PEOPLE['me'] )
 	dm_channel = await my_owner.create_dm()
-	await dm_channel.send(f'<@{owner.id}> just added me to **{guild.name}**!')
+	await dm_channel.send(f'<@{owner.id}> ({owner.name}#{owner.discriminator}) just added me to **{guild.name}**!')
 
 
 
