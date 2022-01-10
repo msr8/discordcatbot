@@ -176,14 +176,14 @@ async def send_cat(ctx):
 	if not isinstance(ctx.channel, discord.DMChannel):
 		# Checks if I am not allowed to send msges in this channel
 		if not str(ctx.channel.id) in get_channels(ctx.guild):
-			print(f'{GR}[LOGGING]{RES} {ctx.author.name}#{ctx.author.discriminator} tried to send a cat where I am not allowed too (Slash: {isinstance(ctx, SlashContext)})')
+			print(f'{GR}[LOGGING]{RES} {ctx.author.name}#{ctx.author.discriminator} tried to send a cat where I am not allowed to (Slash: {isinstance(ctx, SlashContext)}) ({t.asctime()})')
 			# Checks if its a slash command:
 			if isinstance(ctx, SlashContext):
 				await ctx.reply(file=discord.File( get_cute_pic_path() ), hidden=True)
 				return
 			await send_dm(ctx)
 			return
-	print(f'{GR}[LOGGING]{RES} {ctx.author.name}#{ctx.author.discriminator} got a cat!')
+	print(f'{GR}[LOGGING]{RES} {ctx.author.name}#{ctx.author.discriminator} got a cat! ({t.asctime()})')
 	await ctx.reply(file=discord.File( get_cute_pic_path() ))
 
 
