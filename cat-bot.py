@@ -73,8 +73,11 @@ class CustomHelpCommand(commands.DefaultHelpCommand):
 			return
 		await channel.send( f'Commands for <@{bot.user.id}>:\n\n{HELP}' )
 
+# Does the intent shit
+intents = discord.Intents.default()
+intents.members = True
 
-bot = commands.Bot( command_prefix=PREFIX, help_command=CustomHelpCommand() )
+bot = commands.Bot( command_prefix=PREFIX, help_command=CustomHelpCommand(), intents=intents )
 slash = SlashCommand(bot, sync_commands=True)
 
 
