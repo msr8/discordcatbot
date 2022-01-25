@@ -4,7 +4,7 @@
 
 [![Server Invite](https://discordapp.com/api/guilds/917924802554109953/embed.png?style=shield)](https://discord.gg/aGUvpSxMz5) ![Python](https://img.shields.io/badge/-Python-9cf?logo=python&style=plastic&logoColor=000066&labelColor=white) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/msr8/discordcatbot?style=plastic) ![Lines of code](https://img.shields.io/tokei/lines/github/msr8/discordcatbot?style=plastic) ![GitHub issues](https://img.shields.io/github/issues/msr8/discordcatbot?style=plastic) ![GitHub Repo stars](https://img.shields.io/github/stars/msr8/discordcatbot?style=plastic)
 
-Cat Bot#4474 is a bot which sends you pictures/videos of cats (mostly) in your discord server when you want. You can customise which channels the bot is allowed to message in
+Cat Bot#4474 is a bot which sends you pictures/videos of cats (mostly) in your discord server when you want. You can customise which channels the bot is allowed to message in. Currently, there are 1500+ pictures and videos in my collection
 
 <br>
 
