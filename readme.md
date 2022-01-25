@@ -40,7 +40,7 @@ If you're still having issues, please watch the [tutorial](https://github.com/ms
 
 - [x] Get it up and running
 
-- [ ] Register it on sites like top.gg
+- [x] Register it on sites like top.gg
 
 <br>
 
