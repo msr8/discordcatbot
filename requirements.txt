@@ -1,3 +1,0 @@
-colorama
-discord.py
-discord-py-interactions
