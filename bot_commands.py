@@ -58,9 +58,11 @@ async def about(ctx:ApplicationContext, bot:Bot, style:str, nfetch:str, facts:li
 
     # If the style is embed, makes an embed
     if style == 'Embed':
-        content = ''
-        embed   = Embed(colour=Colour(0xB000B5))
+        content      = ''
+        embed       = Embed()
+        embed.color = 0xB000B5
         embed.set_author(name=bot.user, icon_url=bot.user.avatar.url)
+        embed.set_footer(text='To view all my commands, please do /help')
         embed.add_field(name='Name',       value=f'{bot.user}',                 inline=inline )
         embed.add_field(name='Ping',       value=f'{int(bot.latency*1000)}ms',  inline=inline )
         embed.add_field(name='Pictures',   value=f'{pics}',                     inline=True   )
@@ -69,7 +71,7 @@ async def about(ctx:ApplicationContext, bot:Bot, style:str, nfetch:str, facts:li
         embed.add_field(name='Servers',    value=f'{len(bot.guilds)}',          inline=inline )
         embed.add_field(name='Developer',  value=f'<@{owner.id}>',              inline=inline )
     
-    # Else, makes a neofetch style text
+    # Else, makes a neofetch style text, ██
     else:
         embed    = None
         content  = nfetch.format(
@@ -112,6 +114,19 @@ async def invite(ctx:ApplicationContext, bot_inv:str):
 
 async def fact(ctx:ApplicationContext, facts:list[str]):
     await ctx.respond(r.choice(facts))
+
+
+
+async def help(ctx:ApplicationContext, bot:Bot, help_dict:list):
+    embed       = Embed()
+    embed.title = 'My commands!'
+    embed.color = 0xB000B5
+    embed.set_author(name=bot.user, icon_url=bot.user.avatar.url)
+    # Adds all the attributes
+    for k in help_dict:
+        embed.add_field(name=f'`/{k}`', value=help_dict[k], inline=False)
+    
+    await ctx.respond(embed=embed)
 
 
 

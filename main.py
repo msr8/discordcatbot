@@ -23,6 +23,9 @@ with open('config.json') as f:
 # Loads the facts
 with open('DATA/facts.json') as f:
     facts:list = json.load(f)
+# Loads the help texts
+with open('DATA/help.json') as f:
+    help_dict:list = json.load(f)
 # Loads the ascii cats
 with open('DATA/cats.txt') as f:
     ascii_cats = f.read().split('\n\n\n\n\n\n')
@@ -34,7 +37,7 @@ with open('DATA/neofetch.txt') as f:
 
 intents = discord.Intents.default()
 bot     = commands.Bot(guild_ids=[1028742298563002490, 1029927181327007815], intents=intents)
-# guild_ids=[1028742298563002490], 
+
 
 
 
@@ -54,6 +57,7 @@ async def on_disconnect():
 
 @bot.event
 async def on_guild_join(guild:discord.Guild):
+    # Gets the bot owner
     owner   = (await bot.application_info()).owner
     # Gets the guild owner
     g_owner = await bot.fetch_user( guild.owner_id )
@@ -62,16 +66,15 @@ async def on_guild_join(guild:discord.Guild):
     logme(f'\n[grey50][{get_ts()}][/] [b green1]{g_owner} JUST ADDED ME TO {guild}!![/]\n')
 
 
-
 @bot.event
 async def on_guild_remove(guild:discord.Guild):
+    # Gets the bot owner
     owner   = (await bot.application_info()).owner
     # Gets the guild owner
     g_owner = await bot.fetch_user( guild.owner_id )
     # Logs it
     await owner.send(f'{g_owner.mention} just removed me from **{guild}** :(')
     logme(f'\n[grey50][{get_ts()}][/] [b red1]{g_owner} JUST REMOVED ME FROM {guild} :([/]\n')
-
 
 
 @bot.event
@@ -90,28 +93,31 @@ async def on_application_command_completion(ctx:discord.ApplicationContext):
 
 
 
-@bot.slash_command(name='about', description='Introduces myself!')
+@bot.slash_command(name='about', description=help_dict['about'])
 @discord.option(name='style', choices=['Embed', 'Neofetch'], default='Embed', description='Display the information in an embed for a neofetch style code block')
 async def _(ctx, style:str):
     await bot_commands.about(ctx, bot, style, nfetch, facts, config['eyebleach_path'], config['bot_invite'], config['server_invite'])
 
 
-@bot.slash_command(name='cat', description='Sends you a picture/video of a cat')
+@bot.slash_command(name='cat', description=help_dict['cat'])
 @discord.option(name='type', choices=['Picture', 'Video'], default='')
 async def _(ctx, type:str):
     await bot_commands.cat(ctx, type, config['eyebleach_path'], ascii_cats)
 
 
-@bot.slash_command(name='fact', description='Tells a fun fact about cats')
+@bot.slash_command(name='fact', description=help_dict['fact'])
 async def _(ctx):
     await bot_commands.fact(ctx, facts)
 
 
-@bot.slash_command(name='invite', description='Add me to your server')
+@bot.slash_command(name='invite', description=help_dict['invite'])
 async def _(ctx):
     await bot_commands.invite(ctx, config['bot_invite'])
 
 
+@bot.slash_command(name='help', description='Shows all the bot\'s commands')
+async def _(ctx):
+    await bot_commands.help(ctx, bot, help_dict)
 
 
 
@@ -122,9 +128,8 @@ async def _(ctx):
 
 
 
-# @bot.user_command(name="Say Hello")
-# async def hi(ctx, user):
-#     await ctx.respond(f"{ctx.author.mention} says hello to {user.name}!")
+
+
 
 
 
@@ -142,7 +147,7 @@ bot.run(config['token'])
 
 
 '''
--> Help Command
+-> Test joining and leaving of servers
 
 '''
 
