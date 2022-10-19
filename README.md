@@ -5,10 +5,10 @@ Cat Bot#4474 is a bot which sends you pictures/videos of cats or a cat fact in y
 <br>
 
 <div align=center>
-    <img src="https://shields.io/badge/invite_the-discord_bot-7289DA?logo=discord&style=for-the-badge">
+    <a href="https://discord.com/api/oauth2/authorize?client_id=1028700868729634906&scope=applications.commands%20bot&permissions=0">
+        <img src="https://shields.io/badge/invite_the-discord_bot-7289DA?logo=discord&style=for-the-badge">
+    </a>
 </div>
-
-<br>
 
 # Commands
 
