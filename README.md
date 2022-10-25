@@ -1,3 +1,14 @@
+<div align='center'>
+   <!-- Thank you coloors.co! -->
+
+   <img src="https://img.shields.io/github/stars/msr8/discordcatbot?color=3E3E3E&labelColor=302D41&style=for-the-badge">
+   <img src="https://img.shields.io/github/last-commit/msr8/discordcatbot?color=2F2F2F&labelColor=302D41&style=for-the-badge">   
+   <img src="https://img.shields.io/github/issues/msr8/discordcatbot?color=202020&labelColor=302D41&style=for-the-badge">
+
+</div>
+
+<br>
+
 # Index
 
 * [Introduction](#introduction)
@@ -34,6 +45,8 @@ Cat Bot#4474 is a bot which sends you pictures/videos of cats or a cat fact in y
 
 # Links
 
+<br>
+
 ## Support Server
 
 [![Server Invite](https://discordapp.com/api/guilds/917924802554109953/embed.png?style=banner2)](https://discord.gg/aGUvpSxMz5)
@@ -50,12 +63,8 @@ Cat Bot#4474 is a bot which sends you pictures/videos of cats or a cat fact in y
 
 
 <!--
--> Index
+
 -> Main heading video thingy
--> Badges
-   -> Stars
-   -> Last commit
-   -> Issues
 
 -->
 
