@@ -45,8 +45,6 @@ Cat Bot#4474 is a bot which sends you pictures/videos of cats or a cat fact in y
 
 # Links
 
-<br>
-
 ## Support Server
 
 [![Server Invite](https://discordapp.com/api/guilds/917924802554109953/embed.png?style=banner2)](https://discord.gg/aGUvpSxMz5)
