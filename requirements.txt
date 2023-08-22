@@ -1,2 +1,5 @@
-py-cord
+py-cord[speed]
 rich
+requests
+prettytable
+rcat

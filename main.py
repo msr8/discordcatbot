@@ -32,6 +32,12 @@ with open('DATA/cats.txt') as f:
 # Loads the neofetch text
 with open('DATA/neofetch.txt') as f:
     nfetch = f.read()
+# Loads the files.json
+with open('DATA/files.json') as f:
+    files_json:dict = json.load(f)
+# Loads the files_info.json
+with open('DATA/files_info.json') as f:
+    files_info_json:dict = json.load(f)
 
 
 
@@ -96,13 +102,12 @@ async def on_application_command_completion(ctx:discord.ApplicationContext):
 @bot.slash_command(name='about', description=help_dict['about'])
 @discord.option(name='style', choices=['Embed', 'Neofetch'], default='Embed', description='Display the information in an embed for a neofetch style code block')
 async def _(ctx, style:str):
-    await bot_commands.about(ctx, bot, style, nfetch, facts, config['eyebleach_path'], config['bot_invite'], config['server_invite'])
+    await bot_commands.about(ctx, bot, style, nfetch, facts, files_info_json, config['bot_invite'], config['server_invite'])
 
 
 @bot.slash_command(name='cat', description=help_dict['cat'])
-@discord.option(name='type', choices=['Picture', 'Video'], default='')
-async def _(ctx, type:str):
-    await bot_commands.cat(ctx, type, config['eyebleach_path'], ascii_cats)
+async def _(ctx):
+    await bot_commands.cat(ctx, files_json, ascii_cats)
 
 
 @bot.slash_command(name='fact', description=help_dict['fact'])
@@ -148,6 +153,5 @@ bot.run(config['token'])
 
 '''
 -> Test joining and leaving of servers
-
 '''
 
