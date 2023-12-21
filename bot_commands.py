@@ -16,7 +16,7 @@ class MyView(View): # Create a class called MyView that subclasses discord.ui.Vi
         super().__init__()
 
         self.add_item(Button(label='Bot Invite',      url=bot_inv))
-        self.add_item(Button(label='Website',         url='https://msr8.github.io/cats'))
+        self.add_item(Button(label='Website',         url='https://msr8.dev/cats'))
         self.add_item(Button(label='Source Code',     url='https://github.com/msr8/discordcatbot'))
         self.add_item(Button(label='Support Server',  url=server_inv))
 
@@ -99,15 +99,15 @@ async def cat(ctx:ApplicationContext, files_json:dict, ascii_cats:list[str]):
     color      = 0xB000B5
     ts         = dt.fromtimestamp(file["created_utc"]).strftime('%-d/%-m/%y (%H:%M)')
     author     = f'r/{file["subreddit"]}'
-    author_url = file['post_url']
-    desc       = f'**{file["title"]}**'
+    author_url = f'https://reddit.com/r/{file["subreddit"]}'
+    desc       = f'**[{file["title"]}]({file["post_url"]})**'
     img_url    = file['media_url']
     footer     = f'u/{file["op"]}   •   {ts}'
 
     embed.description = desc
     embed.color = color
     embed.set_author(name = author, url = author_url)
-    embed.set_image (url = img_url)
+    embed.set_image (url  = img_url)
     embed.set_footer(text = footer)
 
     await msg.edit_original_response(content=None, embed=embed)
