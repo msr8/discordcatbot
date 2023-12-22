@@ -33,16 +33,18 @@ Cat Bot#4474 is a bot which sends you an image of a cat and a fact about cats wh
 # Commands
 
 `/help` : Shows all the bot's commands
+
 `/about` : Shows some information about itself
+
 `/cat` : Sends you an image of a cat
+
 `/fact` : Tells a fun fact about cats
+
 `/invite` : Sends a link to add the bot to your server
 
 <br>
 
-# Links
-
-## Support Server
+# Support Server
 
 [![Server Invite](https://discordapp.com/api/guilds/917924802554109953/embed.png?style=banner2)](https://discord.gg/aGUvpSxMz5)
 <!-- 
