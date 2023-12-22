@@ -51,7 +51,7 @@ bot     = commands.Bot(guild_ids=[1028742298563002490, 1029927181327007815], int
 
 @bot.event
 async def on_connect():
-    logme(f'[grey50][{get_ts()}][/] [b green1]BOT IS UP![/]\n')
+    logme(f'[grey50][{get_ts()}][/] [b green1]{bot.user.name}#{bot.user.discriminator} IS UP![/]\n')
     if bot.auto_sync_commands:
         await bot.sync_commands()
 
@@ -69,7 +69,7 @@ async def on_guild_join(guild:discord.Guild):
     g_owner = await bot.fetch_user( guild.owner_id )
     # Logs it
     await owner.send(f'{g_owner.mention} just added me to **{guild}**!')
-    logme(f'\n[grey50][{get_ts()}][/] [b green1]{g_owner} JUST ADDED ME TO {guild}!![/]\n')
+    logme(f'\n[grey50][{get_ts()}][/] [b green1]{g_owner.name}#{g_owner.discriminator} JUST ADDED ME TO {guild}!![/]\n')
 
 
 @bot.event

@@ -17,14 +17,15 @@
 
 <br>
 
+
 # Introduction
 
-Cat Bot#4474 is a bot which sends you pictures/videos of cats or a cat fact in your discord server whenever you do `/cat` or `/fact`. To add this bot to your server, just click the button below! Currently, there are over 3500 pictures/videos and over 300 facts in my collection
+Cat Bot#4474 is a bot which sends you an image of a cat and a fact about cats whenever you do `/cat` and `/fact` respectively. To add this bot to your server, just click the button below! Currently there are over 6500 images and over 300 facts available
 
 <br>
 
 <div align=center>
-    <a href="https://discord.com/api/oauth2/authorize?client_id=1028700868729634906&scope=applications.commands%20bot&permissions=0">
+    <a href="https://discord.com/api/oauth2/authorize?client_id=893261717155500082&permissions=0&scope=bot+applications.commands">
         <img src="https://shields.io/badge/invite_the-discord_bot-7289DA?logo=discord&style=for-the-badge">
     </a>
 </div>
@@ -32,13 +33,9 @@ Cat Bot#4474 is a bot which sends you pictures/videos of cats or a cat fact in y
 # Commands
 
 `/help` : Shows all the bot's commands
-
 `/about` : Shows some information about itself
-
-`/cat` : Sends you a picture/video of a cat
-
+`/cat` : Sends you an image of a cat
 `/fact` : Tells a fun fact about cats
-
 `/invite` : Sends a link to add the bot to your server
 
 <br>

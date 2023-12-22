@@ -86,7 +86,7 @@ async def about(ctx:ApplicationContext, bot:Bot, style:str, nfetch:str, facts:li
 
 
 async def cat(ctx:ApplicationContext, files_json:dict, ascii_cats:list[str]):
-    msg   = await ctx.respond(f'Enhancing...\n```\n{r.choice(ascii_cats)}```')
+    msg = await ctx.respond(f'Enhancing...\n```\n{r.choice(ascii_cats)}```')
 
     # Gets the cat
     file_ids = list(files_json['data'].values())

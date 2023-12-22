@@ -2,8 +2,6 @@ from   discord.ext import commands
 import discord
 
 from prettytable import PrettyTable as PT
-from tqdm        import tqdm
-from rich        import inspect
 
 import json
 
