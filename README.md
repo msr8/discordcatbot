@@ -9,15 +9,6 @@
 
 <br>
 
-# Index
-
-* [Introduction](#introduction)
-* [Commands](#commands)
-* [Links](#links)
-
-<br>
-
-
 # Introduction
 
 Cat Bot#4474 is a bot which sends you an image of a cat and a fact about cats whenever you do `/cat` and `/fact` respectively. To add this bot to your server, just click the button below! Currently there are over 6500 images and over 300 facts available
