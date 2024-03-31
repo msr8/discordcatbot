@@ -1,4 +1,3 @@
-from   rich        import print as printf
 from   discord.ext import commands
 import discord
 
@@ -42,23 +41,28 @@ with open('DATA/files_info.json') as f:
 
 
 intents = discord.Intents.default()
-bot     = commands.Bot(guild_ids=[1028742298563002490, 1029927181327007815], intents=intents)
+bot     = commands.Bot(intents=intents)
 
 
 
 
 
+
+# @bot.event
+# async def on_connect():
+#     logme(f'[grey50][{get_ts()}][/] [b green1]{bot.user.name}#{bot.user.discriminator} IS UP![/]\n')
+#     if bot.auto_sync_commands:
+#         await bot.sync_commands()
 
 @bot.event
-async def on_connect():
+async def on_ready():
     logme(f'[grey50][{get_ts()}][/] [b green1]{bot.user.name}#{bot.user.discriminator} IS UP![/]\n')
-    if bot.auto_sync_commands:
-        await bot.sync_commands()
 
 
-@bot.event
-async def on_disconnect():
-    logme(f'[grey50][{get_ts()}][/] [b red1]BOT IS DOWN :([/]')
+
+# @bot.event
+# async def on_disconnect():
+#     logme(f'[grey50][{get_ts()}][/] [b red1]BOT IS DOWN :([/]')
 
 
 @bot.event
