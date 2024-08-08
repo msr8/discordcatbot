@@ -9,6 +9,14 @@
 
 <br>
 
+- Developed a discord bot to send random cat images/videos and facts
+- Used Python to scrape 9k+ cat pictures and videos from Reddit
+- Used Python to scrape 300+ facts relating to cats
+- Used the Pycord module to interact with Discord's API
+- Hosted on a Vultr VPS
+
+<br>
+
 # Introduction
 
 Cat Bot#4474 is a bot which sends you an image of a cat and a fact about cats whenever you do `/cat` and `/fact` respectively. To add this bot to your server, just click the button below! Currently there are over 6500 images and over 300 facts available
